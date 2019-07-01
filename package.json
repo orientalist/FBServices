@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node app.js"
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,7 @@
     "express": "^4.17.1",
     "express-art-template": "^1.0.1",
     "jquery": "^3.4.1",
+    "mongoose": "^5.6.1",
     "nodemon": "^1.19.1",
     "request": "^2.88.0"
   }

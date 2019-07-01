@@ -1,0 +1,71 @@
+{{ extend './_layouts/home.html' }}
+{{ block 'title' }}{{ '運動紀錄' }}{{ /block }}
+{{ block 'head' }}
+<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+<style>
+  img {
+    width: 75vw;
+    height: 25vh;
+  }
+</style>
+{{ /block }}
+{{ block 'body' }}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800">運動紀錄</h1>
+  <!-- DataTales Example -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">請選擇運動類別</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <div class="main-carousel">
+          {{ each Equipments }}
+          <div class="carousel-cell"><img src="{{ $value.picUrl }}" alt=""></div>
+          {{ /each }}
+        </div>
+        <div style="margin-top: 30px;">
+          <p>
+            <label for="weight">請輸入重量:</label>
+            <input class="form-control form-control-user" type="number" name="weight" id="weight"
+              placeholder="重量(單位：磅)">
+          </p>
+          <p>
+            <label for="times">請輸入組數:</label>
+            <input class="form-control form-control-user" type="number" name="times" id="times" placeholder="請輸入組數">
+          </p>
+          <p>
+            <a id="aSend" href="#" class="btn btn-primary btn-user btn-block">
+              送出
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.container-fluid -->
+{{ /block }}
+{{ block 'script' }}
+<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+<script>
+  $(document).ready(() => {
+    $('.main-carousel').flickity({
+      // options
+      cellAlign: 'left',
+      contain: true
+    })
+    $('#aSend').click(function (e) {
+      e.preventDefault()
+      var data={
+        equipment:,
+        weight:,
+        times:
+      }
+    })
+  })
+</script>
+<!-- Page level plugins -->
+{{ /block }}
