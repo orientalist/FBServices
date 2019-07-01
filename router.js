@@ -1,6 +1,6 @@
 var express = require('express')
 var router = express.Router()
-var equipment = require('./models/db/schemas/Equipment')
+var connection = require('./models/db/Connection')
 
 router.get('/webhook', (req, res) => {
     let verify_token = '123456789'
@@ -49,18 +49,34 @@ router.get('/record', (req, res) => {
             userProfile = data
             switch (req.query['type']) {
                 case 'workout':
-                    return equipment.find({belongTo:req.query['subPartition']})
+                    return connection.Equipment.find({ belongTo: req.query['subPartition'] })
             }
         },
         (err) => {
             res.sendStatus(404)
         }).then(
             (equipments) => {
-                res.render('record.html', {User:JSON.parse(userProfile),Equipments:equipments})
+                res.render('record.html', { User: JSON.parse(userProfile), Equipments: equipments })
             },
-            (err) => {
+            (err) => {            
                 res.sendStatus(404)
             })
+})
+
+router.post('/record', (req, res) => {
+    var body = req.body
+    var recordBL = require('./models/db/functions/recordBL')
+    recordBL.SaveRecord(body.psid, body.equipment, body.weight, body.times, connection,
+        (validateMsg) => {
+            res.status(500).send(validateMsg)
+        }, (savePromise) => {
+            savePromise.then((result) => {
+                res.status(200).send(result)
+            },
+            (err) => {
+                res.status(500).send(err)
+            })
+        })
 })
 
 router.get('/test', (req, res) => {

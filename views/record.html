@@ -23,19 +23,20 @@
       <div class="table-responsive">
         <div class="main-carousel">
           {{ each Equipments }}
-          <div class="carousel-cell"><img src="{{ $value.picUrl }}" alt=""></div>
+          <div data-eqid='{{ $value._id }}' class="carousel-cell"><img src="{{ $value.picUrl }}" alt=""></div>
           {{ /each }}
         </div>
         <div style="margin-top: 30px;">
+          <input type="hidden" name="psid" id="psid" value="{{ User.id }}">
           <p>
             <label for="weight">請輸入重量:</label>
             <input class="form-control form-control-user" type="number" name="weight" id="weight"
               placeholder="重量(單位：磅)">
           </p>
           <p>
-            <label for="times">請輸入組數:</label>
-            <input class="form-control form-control-user" type="number" name="times" id="times" placeholder="請輸入組數">
-          </p>
+            <label for="times">請輸入次數:</label>
+            <input class="form-control form-control-user" type="number" name="times" id="times" placeholder="請輸入次數">
+          </p>          
           <p>
             <a id="aSend" href="#" class="btn btn-primary btn-user btn-block">
               送出
@@ -52,18 +53,40 @@
 <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 <script>
   $(document).ready(() => {
-    $('.main-carousel').flickity({
+    var carousel=$('.main-carousel').flickity({
       // options
       cellAlign: 'left',
       contain: true
     })
+    var flkty=carousel.data('flickity')
     $('#aSend').click(function (e) {
       e.preventDefault()
-      var data={
-        equipment:,
-        weight:,
-        times:
-      }
+       var data={
+         psid:$('input[name="psid"]').val(),
+         equipment:$(flkty.selectedElement).attr('data-eqid'),
+         weight:parseInt($('input[name="weight"]').val()),
+         times:parseInt($('input[name="times"]').val())         
+       }       
+       if(data.equipment.length<=0){         
+         alert('請選擇器材')
+         return
+       }
+       if(isNaN(data.weight)){
+         alert('請輸入重量')
+         return
+       }
+       if(isNaN(data.times)){
+         alert('請輸入每組次數')
+         return
+       }
+       $.ajax({
+         url:'/record',
+         type:'POST',
+         contentType:'application/json',         
+         data:JSON.stringify(data)
+       }).done((result)=>{
+         console.log(result)
+       })
     })
   })
 </script>

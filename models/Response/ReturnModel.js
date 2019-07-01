@@ -6,3 +6,9 @@ exports.Result=(code,msg,data)=>{
     }
     return model
 }
+
+exports.Model={
+    code:0,
+    msg:'',
+    data:null
+}
