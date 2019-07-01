@@ -12,12 +12,10 @@
 {{ block 'body' }}
 <!-- Begin Page Content -->
 <div class="container-fluid">
-  <!-- Page Heading -->
-  <h1 class="h3 mb-2 text-gray-800">運動紀錄</h1>
   <!-- DataTales Example -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">請選擇運動類別</h6>
+      <h6 class="m-0 font-weight-bold text-primary">請選擇運動器材</h6>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -85,7 +83,12 @@
          contentType:'application/json',         
          data:JSON.stringify(data)
        }).done((result)=>{
-         console.log(result)
+         if(result.code===200){
+           alert('儲存成功')
+           window.close()
+         }else{
+           alert('伺服器忙碌中,請稍後再試')
+         }
        })
     })
   })

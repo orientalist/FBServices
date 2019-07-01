@@ -49,18 +49,27 @@ router.get('/record', (req, res) => {
             userProfile = data
             switch (req.query['type']) {
                 case 'workout':
-                    return connection.Equipment.find({ belongTo: req.query['subPartition'] })
+                    var eqBl = require('./models/db/functions/equipmentBL')
+                    eqBl.GetEquipments(connection, req.query['subPartition'],
+                        (err) => {
+                            res.sendStatus(404).send(err)
+                        },
+                        (promise) => {
+                            promise.then(
+                                (equipments) => {
+                                    res.render('record.html', { User: JSON.parse(userProfile), Equipments: equipments })
+                                },
+                                (err) => {
+                                    res.sendStatus(404).send(err)
+                                })
+                        }
+                    )
+                break
             }
         },
         (err) => {
-            res.sendStatus(404)
-        }).then(
-            (equipments) => {
-                res.render('record.html', { User: JSON.parse(userProfile), Equipments: equipments })
-            },
-            (err) => {            
-                res.sendStatus(404)
-            })
+            res.sendStatus(404).send(err)
+        })
 })
 
 router.post('/record', (req, res) => {
@@ -71,11 +80,11 @@ router.post('/record', (req, res) => {
             res.status(500).send(validateMsg)
         }, (savePromise) => {
             savePromise.then((result) => {
-                res.status(200).send(result)
+                res.status(200).send({ code: 200 })
             },
-            (err) => {
-                res.status(500).send(err)
-            })
+                (err) => {
+                    res.status(500).send(err)
+                })
         })
 })
 

@@ -43,6 +43,15 @@ exports.Record = mongoose.model('Records',
         times: {
             type: Number,
             required: true
+        },
+        date:{
+            type:Date,
+            default:()=>{
+                var d=new Date()
+                var utc=d.getTime()+(d.getTimezoneOffset()*60000)
+                var nd=new Date(utc+(3600000*8))
+                return nd
+            }
         }
     })
 )
