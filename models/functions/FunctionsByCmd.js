@@ -1,9 +1,10 @@
 var templates = require('../../models/MessageModels/Template')
 var buttons=require('../../models/MessageModels/Buttons')
+var encCenter=require('../Encryption/EncryptionCenter')
 
 exports.Record = (request, sender_psid) => {
     var response=null
-    var url = `https://fbwebhook-240909.appspot.com/record?pid=${sender_psid}`
+    var url = `https://fbwebhook-240909.appspot.com/record?pid=${encCenter.Encrypt_AES192(sender_psid)}`
     switch (request.type) {
         case 'workout':
             url +='&type=workout'

@@ -41,7 +41,7 @@ router.post('/webhook', (req, res) => {
 
 router.get('/record', (req, res) => {
     var func = require('./models/functions/OfficialAPIs')
-    func.Initialize('EAAgXHuY3iVsBAK55e89rxKYW6FbZCDLZA0v4lq14ZB7JbNt6coLvBZAbftXzrIUS27mfeSwXabEFLGIgwqplu2wAaxxSIqc3tj97H6x1DdvFd9bZCaoKQHlEdmxY2ezZCH1kIsRKK5lqWaZAgEUbTMeqO5Sxij7ZBS5sGu09ZBnEEVQZDZD')
+    func.Initialize(require('./models/functions/MessengerProfile').ACCESS_TOKEN)
     var userProfile
     var getProfile = func.GetUserProfile_Promise(req.query['pid'])
     getProfile.then(

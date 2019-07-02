@@ -1,9 +1,4 @@
-var eq=require('./models/db/schemas/Equipment')
+var enc=require('./models/Encryption/EncryptionCenter')
 
-var e=eq.find()
-
-e.then((eqs)=>{
-    console.log(eqs)
-},(err)=>{
-    console.log(err)
-})
+var test=enc.Encrypt_AES192('welcome')
+enc.Decrypt_AES192(test)
