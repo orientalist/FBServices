@@ -10,16 +10,13 @@ exports.Record = (request, sender_psid) => {
             url +='&type=workout'
             switch (request.partition) {
                 case 'chest':
-                    url += '&partition=chest&subPartition='
-                    var _elements = [
-                        templates.List.element('上胸', '', '',
-                            null, [buttons.Get.web_url('上胸紀錄', `${url}1`, 'tall')]),
-                        templates.List.element('中胸', '', '',
-                            null, [buttons.Get.web_url('中胸紀錄', `${url}2`, 'tall')]),
-                        templates.List.element('下胸', '', '',
-                            null, [buttons.Get.web_url('下胸紀錄', `${url}3`, 'tall')])
-                    ]
-                    response=templates.List.template('compact',_elements)
+                    url += '&partition=chest&subPartition='                    
+                    var _buttons=[
+                        buttons.Get.web_url('上胸', `${url}1`, 'tall'),
+                        buttons.Get.web_url('中胸', `${url}2`, 'tall'),
+                        buttons.Get.web_url('下胸', `${url}3`, 'tall')
+                    ]                    
+                    response=templates.Buttons.template('請選擇部位',_buttons)
                     break
             }
             break

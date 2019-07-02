@@ -7,6 +7,24 @@
     width: 75vw;
     height: 25vh;
   }
+
+  .flickity-page-dots {
+    bottom: 0px;
+  }
+
+  /* white circles */
+  .flickity-page-dots .dot {
+    width: 12px;
+    height: 12px;
+    opacity: 1;
+    background: transparent;
+    border: 2px solid white;
+  }
+
+  /* fill-in selected dot */
+  .flickity-page-dots .dot.is-selected {
+    background: white;
+  }
 </style>
 {{ /block }}
 {{ block 'body' }}
@@ -21,20 +39,24 @@
       <div class="table-responsive">
         <div class="main-carousel">
           {{ each Equipments }}
-          <div data-eqid='{{ $value._id }}' class="carousel-cell"><img src="{{ $value.picUrl }}" alt=""></div>
+          <div data-eqid='{{ $value._id }}' class="carousel-cell">
+            <img src="{{ $value.picUrl }}" alt="">
+            <p style="text-align:center;">{{ $value.name }}</p>
+          </div>
           {{ /each }}
         </div>
         <div style="margin-top: 30px;">
           <input type="hidden" name="psid" id="psid" value="{{ User.id }}">
           <p>
             <label for="weight">請輸入重量:</label>
-            <input class="form-control form-control-user" type="number" name="weight" id="weight"
+            <input min="0" class="form-control form-control-user" type="number" name="weight" id="weight"
               placeholder="重量(單位：磅)">
           </p>
           <p>
             <label for="times">請輸入次數:</label>
-            <input class="form-control form-control-user" type="number" name="times" id="times" placeholder="請輸入次數">
-          </p>          
+            <input min="0" class="form-control form-control-user" type="number" name="times" id="times"
+              placeholder="請輸入次數">
+          </p>
           <p>
             <a id="aSend" href="#" class="btn btn-primary btn-user btn-block">
               送出
@@ -51,45 +73,44 @@
 <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 <script>
   $(document).ready(() => {
-    var carousel=$('.main-carousel').flickity({
+    var carousel = $('.main-carousel').flickity({
       // options
       cellAlign: 'left',
       contain: true
     })
-    var flkty=carousel.data('flickity')
+    var flkty = carousel.data('flickity')
     $('#aSend').click(function (e) {
       e.preventDefault()
-       var data={
-         psid:$('input[name="psid"]').val(),
-         equipment:$(flkty.selectedElement).attr('data-eqid'),
-         weight:parseInt($('input[name="weight"]').val()),
-         times:parseInt($('input[name="times"]').val())         
-       }       
-       if(data.equipment.length<=0){         
-         alert('請選擇器材')
-         return
-       }
-       if(isNaN(data.weight)){
-         alert('請輸入重量')
-         return
-       }
-       if(isNaN(data.times)){
-         alert('請輸入每組次數')
-         return
-       }
-       $.ajax({
-         url:'/record',
-         type:'POST',
-         contentType:'application/json',         
-         data:JSON.stringify(data)
-       }).done((result)=>{
-         if(result.code===200){
-           alert('儲存成功')
-           window.close()
-         }else{
-           alert('伺服器忙碌中,請稍後再試')
-         }
-       })
+      var data = {
+        psid: $('input[name="psid"]').val(),
+        equipment: $(flkty.selectedElement).attr('data-eqid'),
+        weight: parseInt($('input[name="weight"]').val()),
+        times: parseInt($('input[name="times"]').val())
+      }
+      if (data.equipment.length <= 0) {
+        alert('請選擇器材')
+        return
+      }
+      if (isNaN(data.weight)) {
+        alert('請輸入重量')
+        return
+      }
+      if (isNaN(data.times)) {
+        alert('請輸入每組次數')
+        return
+      }
+      $.ajax({
+        url: '/record',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data)
+      }).done((result) => {
+        if (result.code === 200) {
+          window.close()
+        } else {
+          alert('伺服器忙碌中,請稍後再試')
+        }
+      })
     })
   })
 </script>

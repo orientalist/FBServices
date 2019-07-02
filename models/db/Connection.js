@@ -1,6 +1,6 @@
 var mongoose = require('mongoose')
 
-mongoose.connect(require('./config').ConnStr('Category'), { userNewUrlParser: true })
+mongoose.connect(require('./config').ConnStr('Record'), { userNewUrlParser: true })
 
 var Schema = mongoose.Schema
 
