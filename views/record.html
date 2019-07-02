@@ -39,15 +39,9 @@
       <div class="table-responsive">
         <div class="main-carousel">
           {{ each Equipments }}
-<<<<<<< HEAD
           <div data-eqid='{{ $value.equipments._id }}' class="carousel-cell">
             <img src="{{ $value.equipments.picUrl }}" alt="">
             <p style="text-align:center;">{{ $value.equipments.name }}</p>
-=======
-          <div data-eqid='{{ $value._id }}' class="carousel-cell">
-            <img src="{{ $value.picUrl }}" alt="">
-            <p style="text-align:center;">{{ $value.name }}</p>
->>>>>>> 5d9ff2cbce867e8c98aa9ba7dbad07e473e6f42d
           </div>
           {{ /each }}
         </div>
