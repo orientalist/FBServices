@@ -68,3 +68,18 @@ exports.List={
         return model
     }
 }
+exports.Buttons={
+    template:(title,buttons)=>{
+        var model={
+            attachment:{
+                type:'template',
+                payload:{
+                    template_type:'button',
+                    text:title,
+                    buttons:buttons
+                }
+            }
+        }
+        return model
+    }
+}

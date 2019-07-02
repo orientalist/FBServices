@@ -1,6 +1,7 @@
 var express = require('express')
 var router = express.Router()
 var connection = require('./models/db/Connection')
+var encCenter=require('./models/Encryption/EncryptionCenter')
 
 router.get('/webhook', (req, res) => {
     let verify_token = '123456789'
@@ -41,12 +42,13 @@ router.post('/webhook', (req, res) => {
 
 router.get('/record', (req, res) => {
     var func = require('./models/functions/OfficialAPIs')
-    func.Initialize('EAAgXHuY3iVsBAK55e89rxKYW6FbZCDLZA0v4lq14ZB7JbNt6coLvBZAbftXzrIUS27mfeSwXabEFLGIgwqplu2wAaxxSIqc3tj97H6x1DdvFd9bZCaoKQHlEdmxY2ezZCH1kIsRKK5lqWaZAgEUbTMeqO5Sxij7ZBS5sGu09ZBnEEVQZDZD')
+    func.Initialize(require('./models/functions/MessengerProfile').ACCESS_TOKEN)
     var userProfile
     var getProfile = func.GetUserProfile_Promise(req.query['pid'])
     getProfile.then(
-        (data) => {
-            userProfile = data
+        (data) => {            
+            userProfile =JSON.parse(data)
+            userProfile.id=encCenter.Encrypt_AES192(userProfile.id)
             switch (req.query['type']) {
                 case 'workout':
                     var eqBl = require('./models/db/functions/equipmentBL')
@@ -57,14 +59,15 @@ router.get('/record', (req, res) => {
                         (promise) => {
                             promise.then(
                                 (equipments) => {
-                                    res.render('record.html', { User: JSON.parse(userProfile), Equipments: equipments })
+                                    console.log(equipments)
+                                    res.render('record.html', { User: userProfile, Equipments: equipments})
                                 },
                                 (err) => {
                                     res.sendStatus(404).send(err)
                                 })
                         }
                     )
-                break
+                    break
             }
         },
         (err) => {
@@ -77,13 +80,13 @@ router.post('/record', (req, res) => {
     var recordBL = require('./models/db/functions/recordBL')
     recordBL.SaveRecord(body.psid, body.equipment, body.weight, body.times, connection,
         (validateMsg) => {
-            res.status(500).send(validateMsg)
+            res.status(200).send({code:500})
         }, (savePromise) => {
             savePromise.then((result) => {
                 res.status(200).send({ code: 200 })
             },
                 (err) => {
-                    res.status(500).send(err)
+                    res.status(200).send({code:500})
                 })
         })
 })

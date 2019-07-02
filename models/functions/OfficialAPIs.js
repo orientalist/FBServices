@@ -1,4 +1,5 @@
 var request = require('request')
+var ceyptCenter=require('../Encryption/EncryptionCenter')
 var access_token
 
 exports.Initialize = (_access_token) => {
@@ -45,7 +46,7 @@ exports.GetUserProfile = (psid, callback, callFail) => {
 exports.GetUserProfile_Promise = (psid) => {
     return new Promise((resolved, rejected) => {
         request({
-            'uri': `https://graph.facebook.com/${psid}?fields=first_name,last_name,profile_pic,gender&access_token=${access_token}`,
+            'uri': `https://graph.facebook.com/${ceyptCenter.Decrypt_AES192(psid)}?fields=first_name,last_name,profile_pic,gender&access_token=${access_token}`,
             'method': 'GET'
         },(err,res,body)=>{
             if(!err){
