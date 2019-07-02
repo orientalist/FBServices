@@ -59,7 +59,6 @@ router.get('/record', (req, res) => {
                         (promise) => {
                             promise.then(
                                 (equipments) => {
-                                    console.log(equipments)
                                     res.render('record.html', { User: userProfile, Equipments: equipments})
                                 },
                                 (err) => {

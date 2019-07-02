@@ -1,6 +1,7 @@
 exports.GetEquipments = (connection, partiotionSn, dataError, returnPromise) => {
     if (!connection || !partiotionSn || isNaN(partiotionSn)) {
         dataError('參數錯誤')
+<<<<<<< HEAD
     } else {
         returnPromise(connection.Equipment.aggregate([
             {
@@ -16,5 +17,9 @@ exports.GetEquipments = (connection, partiotionSn, dataError, returnPromise) => 
                 }
             }
         ]))
+=======
+    }else{
+        returnPromise(connection.Equipment.find({ belongTo: partiotionSn,status:1}))
+>>>>>>> 5d9ff2cbce867e8c98aa9ba7dbad07e473e6f42d
     }
 }
