@@ -6,7 +6,20 @@ var Schema = mongoose.Schema
 
 exports.Equipment = mongoose.model('Equipments',
     new Schema({
+        belongTo:{
+            type:String,
+            required:true
+        },
         groupSn:Number,
+        groupName:{
+            type:String,
+            required:true
+        },
+        groupStatus:{
+            type:Number,
+            enum:[0,1,2],
+            default:1
+        },
         equipments:[
             {
                 name:{
@@ -33,26 +46,44 @@ exports.Record = mongoose.model('Records',
             type: String,
             required: true
         },
-        equipmentId: {
-            type: String,
-            required: true
-        },
-        weight: {
-            type: Number,
-            required: true
-        },
-        times: {
-            type: Number,
-            required: true
-        },
-        date:{
+        dateTime:{
             type:Date,
             default:()=>{
                 var d=new Date()
                 var utc=d.getTime()+(d.getTimezoneOffset()*60000)
                 var nd=new Date(utc+(3600000*8))
+                nd=new Date(nd.getFullYear(),nd.getMonth(),nd.getDay())
                 return nd
             }
-        }
+        },
+        records:[
+            {
+                equipmentId: {
+                    type: String,
+                    required: true
+                },
+                equipmentName:{
+                    type:String,
+                    require:true
+                },
+                weight: {
+                    type: Number,
+                    required: true
+                },
+                times: {
+                    type: Number,
+                    required: true
+                },
+                recordTime:{
+                    type:Date,
+                    default:()=>{
+                        var d=new Date()
+                        var utc=d.getTime()+(d.getTimezoneOffset()*60000)
+                        var nd=new Date(utc+(3600000*8))
+                        return nd
+                    }
+                }                
+            }
+        ]        
     })
 )

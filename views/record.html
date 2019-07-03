@@ -39,7 +39,7 @@
       <div class="table-responsive">
         <div class="main-carousel">
           {{ each Equipments }}
-          <div data-eqid='{{ $value.equipments._id }}' class="carousel-cell">
+          <div data-eqid='{{ $value.equipments._id }}' data-equipName='{{ $value.equipments.name }}' class="carousel-cell">
             <img src="{{ $value.equipments.picUrl }}" alt="">
             <p style="text-align:center;">{{ $value.equipments.name }}</p>
           </div>
@@ -84,6 +84,7 @@
       var data = {
         psid: $('input[name="psid"]').val(),
         equipment: $(flkty.selectedElement).attr('data-eqid'),
+        equipmentName:$(flkty.selectedElement).attr('data-equipName'),
         weight: parseInt($('input[name="weight"]').val()),
         times: parseInt($('input[name="times"]').val())
       }
