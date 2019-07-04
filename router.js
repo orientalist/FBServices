@@ -51,7 +51,12 @@ router.get('/record', (req, res) => {
                     case 'workout':
                         recordBl.GetEquipments(connection, req.query['subPartition'],
                             (_equipments) => {
-                                res.render('record.html', { User: _profile, Equipments: _equipments })
+                                if(_equipments.length>0){
+                                    res.render('record.html', { User: _profile, Equipments: _equipments })
+                                }
+                                else{
+                                    res.render('EquipmentNotFound.html', { User: _profile })
+                                }
                             },
                             (err) => {
                                 res.status(200).send(err)

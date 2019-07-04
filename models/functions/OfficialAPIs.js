@@ -1,5 +1,5 @@
 var request = require('request')
-var access_token
+var access_token='EAAgXHuY3iVsBAK55e89rxKYW6FbZCDLZA0v4lq14ZB7JbNt6coLvBZAbftXzrIUS27mfeSwXabEFLGIgwqplu2wAaxxSIqc3tj97H6x1DdvFd9bZCaoKQHlEdmxY2ezZCH1kIsRKK5lqWaZAgEUbTMeqO5Sxij7ZBS5sGu09ZBnEEVQZDZD'
 
 exports.Initialize = (_access_token) => {
     access_token = _access_token
