@@ -4,9 +4,10 @@ var buttons=require('../../../models/MessageModels/Buttons')
 
 eqbl.GetSubPartitions(conn,'chest',
 (eqs)=>{
+    //console.log(eqs)
     var _buttons=[]
     eqs.forEach(element => {
-        _buttons.push(buttons.Get.web_url(element.groupName,`${'url'}${element.groupSn}`,'tall'))
+        _buttons.push(buttons.Get.web_url(element.subPartitions.groupName,`${'url'}${element.subPartitions.groupSn}`,'tall'))
     });
     console.log(_buttons)
 },

@@ -61,7 +61,7 @@ exports.SaveRecord=(psid,equipId,equipName,weight,times,connection,fail,callback
         var d=new Date()
         var utc=d.getTime()+(d.getTimezoneOffset()*60000)
         var nd=new Date(utc+(3600000*8))
-        nd=new Date(nd.getFullYear(),nd.getMonth(),nd.getDay())
+        nd=new Date(nd.getFullYear(),nd.getMonth(),nd.getDate())
         
         psid=encryptCenter.Decrypt_AES192(psid)
 
