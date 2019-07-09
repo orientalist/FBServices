@@ -45,7 +45,7 @@
           </div>
           {{ /each }}
         </div>
-        <div style="margin-top: 30px;">
+        <div>
           <input type="hidden" name="psid" id="psid" value="{{ User.id }}">
           <p>
             <label for="weight">請輸入重量:</label>
@@ -72,13 +72,20 @@
 {{ block 'script' }}
 <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 <script>
+  var flkty=null
   $(document).ready(() => {
     var carousel = $('.main-carousel').flickity({
       // options
       cellAlign: 'left',
-      contain: true
+      contain: true,
+      on:{
+        'change':()=>{
+          fnGetRecordOfEquipment()
+        }
+      }
     })
-    var flkty = carousel.data('flickity')
+    flkty = carousel.data('flickity')
+    fnGetRecordOfEquipment()
     $('#aSend').click(function (e) {
       e.preventDefault()
       var data = {
@@ -114,6 +121,18 @@
       })
     })
   })
+  var fnGetRecordOfEquipment=()=>{
+    var eqid=$(flkty.selectedElement).attr('data-eqid')
+    var psid=$('input[name="psid"]').val()
+    $.ajax({
+      url:'/GetRecordOfEquipment',
+      type:'POST',
+      contentType:'application/json',
+      data:JSON.stringify({eqid:eqid,psid:psid})
+    }).done((result)=>{
+      console.log(result)
+    })
+  }
 </script>
 <!-- Page level plugins -->
 {{ /block }}

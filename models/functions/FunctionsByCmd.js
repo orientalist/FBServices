@@ -14,7 +14,7 @@ exports.Record = (request, sender_psid, conn, callback, fail) => {
             equipBl.GetSubPartitions(conn, request.partition,
                 (positions) => {
                     positions.forEach(element => {
-                        _buttons.push(buttons.Get.web_url(element.subPartitions.groupName, `${url}${element.subPartitions.groupSn}`, 'tall'))
+                        _buttons.push(buttons.Get.web_url(element.subPartitions.groupName, `${url}${element.subPartitions.groupSn}`, 'full'))
                     });
                     response = templates.Buttons.template('請選擇部位', _buttons)
                     callback(response)
