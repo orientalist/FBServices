@@ -32,7 +32,7 @@ router.post('/webhook', (req, res) => {
             if (webhook_event.message) {
                 msgFunc.process(sender_psid, webhook_event.message)
             } else if (webhook_event.postback) {
-                postFunc.process(sender_psid, webhook_event.postback,connection)
+                postFunc.process(sender_psid, webhook_event.postback, connection)
             }
         })
         res.status(200).send('EVENT_RECEIVED')
@@ -45,16 +45,16 @@ router.get('/record', (req, res) => {
     try {
         recordBl.GetUserProfile(req.query['pid'],
             (profile) => {
-                var _profile = JSON.parse(profile)                
+                var _profile = JSON.parse(profile)
                 _profile.id = encCenter.Encrypt_AES192(_profile.id)
                 switch (req.query['type']) {
                     case 'workout':
                         recordBl.GetEquipments(connection, req.query['subPartition'],
                             (_equipments) => {
-                                if(_equipments[0].equipments.length>0){
+                                if (_equipments.length > 0 && _equipments[0].equipments.length > 0) {
                                     res.render('record.html', { User: _profile, Equipments: _equipments[0].equipments })
                                 }
-                                else{
+                                else {
                                     res.render('EquipmentNotFound.html', { User: _profile })
                                 }
                             },
@@ -68,23 +68,23 @@ router.get('/record', (req, res) => {
                 res.status(200).send(err)
             })
     }
-    catch(e){
+    catch (e) {
         res.status(200).send(e)
     }
 })
 
 router.post('/record', (req, res) => {
-    try{
-        var body=req.body
-        recordBl.SaveRecord(body.psid, body.equipment,body.equipmentName, body.weight, body.times, connection,
-            (err)=>{
-                res.status(200).send({code:500})
+    try {
+        var body = req.body
+        recordBl.SaveRecord(body.psid, body.equipment, body.equipmentName, body.weight, body.times, connection,
+            (err) => {
+                res.status(200).send({ code: 500 })
             },
-            (result)=>{
-                res.status(200).send({code:200})
+            (result) => {
+                res.status(200).send({ code: 200 })
             })
-    }catch(e){
-        res.status(200).send({code:500})
+    } catch (e) {
+        res.status(200).send({ code: 500 })
     }
 })
 

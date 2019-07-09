@@ -26,7 +26,7 @@ exports.GetEquipments=(connection,partitionId,callback,fail)=>{
                 (_equipments)=>{
                     callback(_equipments)
                 },
-                (err)=>{
+                (err)=>{                    
                     errorMsg=err
                     fail(errorMsg)
                 }
