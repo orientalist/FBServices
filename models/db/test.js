@@ -15,15 +15,16 @@ var GetCommand = (finish) => {
                     var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
                     var nd = new Date(utc + (3600000 * 8))
                     nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
-
+                    console.log(new Date('2019-07-10T00:00:00.000+00:00'))
                     var promise = connection.RecordsByUsers.find({
                         psid: '2208236499223584',
-                        dateTime: nd,
-                        equipmentId: '5d2450ced6caa0274e1634a6'
+                        dateTime: new Date('2019-07-10T00:00:00.000+00:00'),
+                        equipmentId: '5d2169a0ac36350000d8ed2c'
                     })
 
                     promise.then(
                         (result) => {
+                            console.log(result)
                             if (result.length > 0) {
                                 console.log('Found records\n')
                                 console.log(result[0].recordsByPeriod)
@@ -49,15 +50,14 @@ var GetCommand = (finish) => {
                         {
                             dateTime: nd,
                             psid: '2208236499223584',
-                            equipmentId:'5d2450ced6caa0274e1634a6',
-                            equipmentName:'雙槓屈臂伸'
+                            equipmentId: '5d2450ced6caa0274e1634a6',
+                            equipmentName: '雙槓屈臂伸'
                         },
                         {
                             $push: {
                                 recordsByPeriod: {
                                     weight: 88,
-                                    times: 12,
-                                    period: 1
+                                    times: 12
                                 }
                             }
                         },
@@ -71,6 +71,10 @@ var GetCommand = (finish) => {
                             finish(err)
                         }
                     )
+                    break
+                case 'remove':
+                    console.log('"abc"'.replace(/"/g,''))
+                    finish('ok')
                     break
                 default:
                     finish('Unknown Command')

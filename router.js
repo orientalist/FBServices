@@ -92,11 +92,9 @@ router.post('/GetRecordOfEquipment', (req, res) => {
     try {
         recordBl.GetRecordOfEquipment(connection, req.body,
             (records) => {
-                //console.log(records)
                 res.status(200).send(records)
             },
             (err) => {
-                console.log(err)
                 res.status(200).send('err')
             }
         )

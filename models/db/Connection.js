@@ -150,8 +150,14 @@ exports.RecordsByUsers = mongoose.model('RecordsByUsers',
                     required:true
                 },
                 period:{
-                    type:Number,
-                    required:true
+                    type:Date,
+                    required:true,
+                    default: () => {
+                        var d = new Date()
+                        var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
+                        var nd = new Date(utc + (3600000 * 8))
+                        return nd
+                    }
                 }
             }
         ]

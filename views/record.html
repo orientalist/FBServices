@@ -2,6 +2,7 @@
 {{ block 'title' }}{{ '運動紀錄' }}{{ /block }}
 {{ block 'head' }}
 <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
 <style>
   img {
     width: 75vw;
@@ -25,6 +26,7 @@
   .flickity-page-dots .dot.is-selected {
     background: white;
   }
+  
 </style>
 {{ /block }}
 {{ block 'body' }}
@@ -63,6 +65,23 @@
             </a>
           </p>
         </div>
+        <div>
+          <h6 class="m-0 font-weight-bold text-primary">該項目本日紀錄</h6>
+          <table style="margin-top: 5px;" id='tableTodayRecord'>
+            <thead>
+              <tr>
+                <th>重量(磅/kg)</th>
+                <th>重複次數</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>2</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -71,11 +90,11 @@
 {{ /block }}
 {{ block 'script' }}
 <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script>
   var flkty=null
   $(document).ready(() => {
     var carousel = $('.main-carousel').flickity({
-      // options
       cellAlign: 'left',
       contain: true,
       on:{
@@ -120,6 +139,7 @@
         }
       })
     })
+    fnInitializeTable()
   })
   var fnGetRecordOfEquipment=()=>{
     var eqid=$(flkty.selectedElement).attr('data-eqid')
@@ -131,6 +151,13 @@
       data:JSON.stringify({eqid:eqid,psid:psid})
     }).done((result)=>{
       console.log(result)
+    })
+  }
+  var fnInitializeTable=()=>{
+    $('#tableTodayRecord').dataTable({
+      'paging':false,
+      'info':false,
+      'searching':false
     })
   }
 </script>

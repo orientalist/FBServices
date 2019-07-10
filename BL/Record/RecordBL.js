@@ -58,21 +58,23 @@ exports.SaveRecord = (psid, equipId, equipName, weight, times, connection, fail,
     if (errMsg.length > 0) {
         fail(errMsg)
     } else {
+        psid = encryptCenter.Decrypt_AES192(psid)
+
         var d = new Date()
         var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
         var nd = new Date(utc + (3600000 * 8))
         nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
 
-        psid = encryptCenter.Decrypt_AES192(psid)
-
-        var promise = connection.Record.update(
-            { psid: psid, dateTime: nd },
+        var promise = connection.RecordsByUsers.update(
             {
                 psid: psid,
+                equipmentId: equipId.replace(/"/g,''),
+                equipmentName: equipName,
+                dateTime:nd
+            },
+            {
                 $push: {
-                    'records': {
-                        equipmentId: equipId,
-                        equipmentName: equipName,
+                    recordsByPeriod: {
                         weight: weight,
                         times: times
                     }
@@ -80,6 +82,7 @@ exports.SaveRecord = (psid, equipId, equipName, weight, times, connection, fail,
             },
             { upsert: true }
         )
+
         promise.then(
             (success) => {
                 callback(success)
@@ -94,46 +97,25 @@ exports.SaveRecord = (psid, equipId, equipName, weight, times, connection, fail,
 exports.GetRecordOfEquipment = (conn, queryBody, callback, fail) => {
     var psid = encryptCenter.Decrypt_AES192(queryBody.psid)
 
-
     var d = new Date()
     var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
-    console.log(d.getTimezoneOffset())
-    console.log(d.getTime())
     var nd = new Date(utc + (3600000 * 8))
     nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
-
-    console.log(nd)
-
-    console.log('----------')
-    console.log(new Date().getUTCDate())
-    console.log(new Date().getUTCDay())
-
-    var promise = conn.Record.aggregate(
-        [
-            { $match: { psid: psid, dateTime: nd } },
-            {
-                $project: {
-                    records: {
-                        $filter: {
-                            input: '$records',
-                            as: 'records',
-                            cond: { $eq: ['$$records.equipmentId', queryBody.eqid] }
-                        }
-                    }
-                }
-            }
-        ]
-    )
+   
+    var promise = conn.RecordsByUsers.find({
+        psid: psid,
+        dateTime: nd,
+        equipmentId: queryBody.eqid.replace(/"/g,'')
+    })
 
     promise.then(
         (records) => {
-            console.log('succ')
-            console.log(records)
-            callback(records)
+            if(records.length>0){
+                callback(records[0].recordsByPeriod)
+            }
+            callback([])
         },
         (err) => {
-            console.log('err')
-            console.log(err)
             fail(err)
         }
     )
