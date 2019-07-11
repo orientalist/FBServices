@@ -90,7 +90,7 @@ exports.SaveRecord = (psid, equipId, equipName, weight, times, connection, fail,
                         psid: psid,
                         'records.equipmentId': equipId.replace(/"/g, ''),
                         $gt: {
-                            'records.weight'
+                            'records.weight':a
                         }
                     }
                 )
