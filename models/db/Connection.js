@@ -116,10 +116,10 @@ exports.SubPartitions = mongoose.model('Subpartitions',
 
 exports.RecordsByUsers = mongoose.model('RecordsByUsers',
     new Schema({
-        dateTime:{
-            type:Date,
-            required:true,
-            default:()=>{
+        dateTime: {
+            type: Date,
+            required: true,
+            default: () => {
                 var d = new Date()
                 var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
                 var nd = new Date(utc + (3600000 * 8))
@@ -127,20 +127,59 @@ exports.RecordsByUsers = mongoose.model('RecordsByUsers',
                 return nd
             }
         },
+        psid: {
+            type: String,
+            required: true
+        },
+        equipmentId: {
+            type: String,
+            required: true
+        },
+        equipmentName: {
+            type: String,
+            required: true
+        },
+        recordsByPeriod: [
+            {
+                weight: {
+                    type: Number,
+                    required: true
+                },
+                times: {
+                    type: Number,
+                    required: true
+                },
+                period: {
+                    type: Date,
+                    required: true,
+                    default: () => {
+                        var d = new Date()
+                        var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
+                        var nd = new Date(utc + (3600000 * 8))
+                        return nd
+                    }
+                }
+            }
+        ]
+    })
+)
+
+exports.BestRecords = mongoose.model('BestRecords',
+    new Schema({
         psid:{
             type:String,
             required:true
         },
-        equipmentId:{
-            type:String,
-            required:true
-        },
-        equipmentName:{
-            type:String,
-            required:true
-        },
-        recordsByPeriod:[
+        records:[
             {
+                equipmentId:{
+                    type:String,
+                    required:true
+                },
+                equipmentName:{
+                    type:String,
+                    required:true
+                },
                 weight:{
                     type:Number,
                     required:true
@@ -149,15 +188,9 @@ exports.RecordsByUsers = mongoose.model('RecordsByUsers',
                     type:Number,
                     required:true
                 },
-                period:{
+                dateTime:{
                     type:Date,
-                    required:true,
-                    default: () => {
-                        var d = new Date()
-                        var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
-                        var nd = new Date(utc + (3600000 * 8))
-                        return nd
-                    }
+                    required:true
                 }
             }
         ]

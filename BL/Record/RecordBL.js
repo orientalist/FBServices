@@ -68,9 +68,9 @@ exports.SaveRecord = (psid, equipId, equipName, weight, times, connection, fail,
         var promise = connection.RecordsByUsers.update(
             {
                 psid: psid,
-                equipmentId: equipId.replace(/"/g,''),
+                equipmentId: equipId.replace(/"/g, ''),
                 equipmentName: equipName,
-                dateTime:nd
+                dateTime: nd
             },
             {
                 $push: {
@@ -85,6 +85,15 @@ exports.SaveRecord = (psid, equipId, equipName, weight, times, connection, fail,
 
         promise.then(
             (success) => {
+                var promise_bestRecord = connection.BestRecords.update(
+                    {
+                        psid: psid,
+                        'records.equipmentId': equipId.replace(/"/g, ''),
+                        $gt: {
+                            'records.weight'
+                        }
+                    }
+                )
                 callback(success)
             },
             (err) => {
@@ -101,16 +110,16 @@ exports.GetRecordOfEquipment = (conn, queryBody, callback, fail) => {
     var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
     var nd = new Date(utc + (3600000 * 8))
     nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
-   
+
     var promise = conn.RecordsByUsers.find({
         psid: psid,
         dateTime: nd,
-        equipmentId: queryBody.eqid.replace(/"/g,'')
+        equipmentId: queryBody.eqid.replace(/"/g, '')
     })
 
     promise.then(
         (records) => {
-            if(records.length>0){
+            if (records.length > 0) {
                 callback(records[0].recordsByPeriod)
             }
             callback([])
@@ -121,26 +130,26 @@ exports.GetRecordOfEquipment = (conn, queryBody, callback, fail) => {
     )
 }
 
-exports.GetRecordOfEquipment=(conn,eqid,psid,callback,fail)=>{
-    var psid=encryptCenter.Decrypt_AES192(psid)
+exports.GetRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
+    var psid = encryptCenter.Decrypt_AES192(psid)
 
     var d = new Date()
     var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
     var nd = new Date(utc + (3600000 * 8))
     nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
-    nd=new Date('2019-07-11T00:00:00.000+00:00')
-    
+    //nd = new Date('2019-07-11T00:00:00.000+00:00')
+
     var promise = conn.RecordsByUsers.find({
         psid: psid,
         dateTime: nd,
-        equipmentId: eqid.replace(/"/g,'')
-    }).select({recordsByPeriod:1,_id:0}).lean()
+        equipmentId: eqid.replace(/"/g, '')
+    }).select({ recordsByPeriod: 1, _id: 0 }).lean()
 
     promise.then(
-        (records) => {            
-            if(records.length>0){
+        (records) => {
+            if (records.length > 0) {
                 callback(records[0].recordsByPeriod)
-            }else{
+            } else {
                 callback([])
             }
         },
