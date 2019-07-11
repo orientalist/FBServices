@@ -92,15 +92,30 @@ router.post('/GetRecordOfEquipment', (req, res) => {
     try {
         recordBl.GetRecordOfEquipment(connection, req.body,
             (records) => {
-                res.status(200).send(records)
+                res.status(200).send({code:1,data:records})
             },
             (err) => {
-                res.status(200).send('err')
+                res.status(200).send({code:-1})
             }
         )
     }
     catch (e) {
-        res.send('err')
+        res.status(200).send({code:-1})
+    }
+})
+
+router.get('/GetRecordOfEquipment',(req,res)=>{
+    try{        
+        recordBl.GetRecordOfEquipment(connection,req.query['eqid'],req.query['psid'],
+            (records)=>{                
+                res.status(200).send({data:records})                             
+            },
+            (err)=>{
+                res.status(200).send({data:[]})
+            }
+        )
+    }catch(e){        
+        res.status(200).send({data:[]})
     }
 })
 

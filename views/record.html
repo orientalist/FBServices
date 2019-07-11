@@ -26,7 +26,6 @@
   .flickity-page-dots .dot.is-selected {
     background: white;
   }
-  
 </style>
 {{ /block }}
 {{ block 'body' }}
@@ -75,10 +74,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-              </tr>
+
             </tbody>
           </table>
         </div>
@@ -92,25 +88,25 @@
 <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script>
-  var flkty=null
+  var flkty = null
+  var dataTable=null
   $(document).ready(() => {
     var carousel = $('.main-carousel').flickity({
       cellAlign: 'left',
       contain: true,
-      on:{
-        'change':()=>{
+      on: {
+        'change': () => {
           fnGetRecordOfEquipment()
         }
       }
     })
-    flkty = carousel.data('flickity')
-    fnGetRecordOfEquipment()
+    flkty = carousel.data('flickity')    
     $('#aSend').click(function (e) {
       e.preventDefault()
       var data = {
         psid: $('input[name="psid"]').val(),
         equipment: $(flkty.selectedElement).attr('data-eqid'),
-        equipmentName:$(flkty.selectedElement).attr('data-equipName'),
+        equipmentName: $(flkty.selectedElement).attr('data-equipName'),
         weight: parseInt($('input[name="weight"]').val()),
         times: parseInt($('input[name="times"]').val())
       }
@@ -133,31 +129,34 @@
         data: JSON.stringify(data)
       }).done((result) => {
         if (result.code === 200) {
-          window.close()
+          fnGetRecordOfEquipment()
         } else {
           alert('伺服器忙碌中,請稍後再試')
         }
       })
     })
     fnInitializeTable()
+    fnGetRecordOfEquipment()
   })
-  var fnGetRecordOfEquipment=()=>{
-    var eqid=$(flkty.selectedElement).attr('data-eqid')
-    var psid=$('input[name="psid"]').val()
-    $.ajax({
-      url:'/GetRecordOfEquipment',
-      type:'POST',
-      contentType:'application/json',
-      data:JSON.stringify({eqid:eqid,psid:psid})
-    }).done((result)=>{
-      console.log(result)
-    })
+  var fnGetRecordOfEquipment = () => {
+    var eqid = $(flkty.selectedElement).attr('data-eqid')
+    var psid = $('input[name="psid"]').val()
+    var url = `/GetRecordOfEquipment?eqid=${eqid}&psid=${psid}`
+    dataTable.ajax.url(url).load()
   }
-  var fnInitializeTable=()=>{
-    $('#tableTodayRecord').dataTable({
-      'paging':false,
-      'info':false,
-      'searching':false
+  var fnInitializeTable = () => {
+    dataTable=$('#tableTodayRecord').DataTable({
+      'paging': false,
+      'info': false,
+      'searching': false,
+      'language':
+      {
+        'emptyTable':'本日尚未有紀錄'
+      },
+      'columns':[
+        {data:'weight'},
+        {data:'times'}
+      ]
     })
   }
 </script>
