@@ -107,8 +107,11 @@ router.post('/GetRecordOfEquipment', (req, res) => {
 router.get('/GetRecordOfEquipment',(req,res)=>{
     try{        
         recordBl.GetRecordOfEquipment(connection,req.query['eqid'],req.query['psid'],
-            (records)=>{                
-                res.status(200).send({data:records})                             
+            (records)=>{                                
+                for(be=0;be<records.length;be++){
+                    records[be].period_order=(be+1)                    
+                }                
+                res.status(200).send({data:records})
             },
             (err)=>{
                 res.status(200).send({data:[]})

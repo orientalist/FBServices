@@ -128,13 +128,13 @@ exports.GetRecordOfEquipment=(conn,eqid,psid,callback,fail)=>{
     var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
     var nd = new Date(utc + (3600000 * 8))
     nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
-    //nd=new Date('2019-07-11T00:00:00.000+00:00')
+    nd=new Date('2019-07-11T00:00:00.000+00:00')
     
     var promise = conn.RecordsByUsers.find({
         psid: psid,
         dateTime: nd,
         equipmentId: eqid.replace(/"/g,'')
-    }).select({recordsByPeriod:1,_id:0})
+    }).select({recordsByPeriod:1,_id:0}).lean()
 
     promise.then(
         (records) => {            
