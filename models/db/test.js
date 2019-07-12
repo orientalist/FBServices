@@ -73,8 +73,167 @@ var GetCommand = (finish) => {
                     )
                     break
                 case 'remove':
-                    console.log('"abc"'.replace(/"/g,''))
+                    console.log('"abc"'.replace(/"/g, ''))
                     finish('ok')
+                    break
+                case 'best':
+                    var nd = new Date('2019-07-12T00:00:00.000+00:00')
+
+                    var promise = connection.RecordsByUsers.update(
+                        {
+                            psid: '2208236499223584',
+                            equipmentId: '5d1c44214eebee00000a0586',
+                            equipmentName: '45°臥推',
+                            dateTime: nd
+                        },
+                        {
+                            $push: {
+                                recordsByPeriod: {
+                                    weight: 31,
+                                    times: 12
+                                }
+                            }
+                        },
+                        { upsert: true }
+                    )
+
+                    promise.then(
+                        (success) => {
+                            var promise = connection.BestRecords.find(
+                                {
+                                    psid: '2208236499223584',
+                                    'records.equipmentId': '5d1c44214eebee00000a0586'
+                                },
+                                {
+                                    _id: 0,
+                                    'records.$': 1
+                                }
+                            )
+
+                            return promise
+                        },
+                        (err) => {
+                            finish(err)
+                        }
+                    ).then(
+                        (record) => {
+                            if (record.length > 0) {
+                                var weight = record[0].records[0].weight
+                                if (31 > weight) {
+                                                                        
+                                    var promise = connection.BestRecords.update(
+                                        {
+                                            psid:'2208236499223584',
+                                            'records.equipmentId':'5d1c44214eebee00000a0586'
+                                        },{
+                                            $set:{
+                                                'records.$.weight':31,
+                                                'records.$.times':12,
+                                                'records.$.dateTime':nd
+                                            }
+                                        }
+                                    )                                     
+                                    return promise
+                                } else {
+                                    finish('not bigger')
+                                }
+                            } else {                                
+                                var promise = connection.BestRecords.update(
+                                    {
+                                        psid: '2208236499223584',
+                                    },
+                                    {
+                                        $push: {
+                                            records: {
+                                                equipmentId: '5d1c44214eebee00000a0586',
+                                                equipmentName: '45°臥推',
+                                                weight: 31,
+                                                times: 12,
+                                                dateTime: nd
+                                            }
+                                        }
+                                    }
+                                )
+
+                                return promise
+                            }
+                        },
+                        (err) => {
+                            finish(err)
+                        }
+                    ).then(
+                        (result) => {
+                            finish(result)
+                        },
+                        (err) => {
+                            finish(err)
+                        }
+                    )
+                    break
+                case 'lt':
+                    var promise = connection.BestRecords.find(
+                        {
+                            psid: '2208236499223584',
+                            records: {
+                                $elemMatch: {
+                                    equipmentId: '5d26e25dea8db21f505e2993',
+                                    weight: {
+                                        $gt: 40
+                                    }
+                                }
+                            }
+                        }
+                    )
+                    promise.then(
+                        (result) => {
+                            finish(result)
+                        },
+                        (err) => {
+                            finish(result)
+                        }
+                    )
+                    break
+                case 'rbe':
+                    var promise = connection.BestRecords.find(
+                        {
+                            psid: '2208236499223584',
+                            'records.equipmentId': '5d26e25dea8db21f505e2993'
+                        },
+                        {
+                            _id: 0,
+                            'records.$': 1
+                        }
+                    )
+
+                    promise.then(
+                        (result) => {
+                            if (result.length > 0) {
+                                console.log('recorded')
+                                var weight = result[0].records[0].weight
+                                console.log(weight)
+                            } else {
+                                console.log('no record')
+                            }
+                            finish(result)
+                        },
+                        (err) => {
+                            finish(result)
+                        }
+                    )
+                    break
+                case 'init':
+                    var promise = new connection.BestRecords({
+                        psid: '2208236499223584'
+                    }).save()
+
+                    promise.then(
+                        (success) => {
+                            finish(success)
+                        },
+                        (err) => {
+                            finish(err)
+                        }
+                    )
                     break
                 default:
                     finish('Unknown Command')

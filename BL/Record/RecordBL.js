@@ -85,18 +85,72 @@ exports.SaveRecord = (psid, equipId, equipName, weight, times, connection, fail,
 
         promise.then(
             (success) => {
-                var promise_bestRecord = connection.BestRecords.update(
+                var promise=connection.BestRecords.find(
                     {
-                        psid: psid,
-                        'records.equipmentId': equipId.replace(/"/g, ''),
-                        $gt: {
-                            'records.weight':a
-                        }
-                    }
+                        psid:psid,
+                        'records.equipmentId':equipId
+                    },
+                    {
+                        _id:0,
+                        'records.$':1
+                    }                    
                 )
-                callback(success)
+                return promise
             },
             (err) => {
+                fail(err)
+            }
+        ).then(
+            (record)=>{
+                if(record.length>0){
+                    var _weight=record[0].records[0].weight
+                    if(weight>_weight){
+                        var promise=connection.BestRecords.update(
+                            {
+                                psid:psid,
+                                'records.equipmentId':equipId
+                            },
+                            {
+                                $set:{
+                                    'records.$.weight':weight,
+                                    'records.$.times':times,
+                                    'records.$.dateTime':nd,
+                                }
+                            }
+                        )
+                        return promise
+                    }
+                    else{
+                        callback('ok')
+                    }
+                }else{
+                    var promise=connection.BestRecords.update(
+                        {
+                            psid:psid
+                        },
+                        {
+                            $push:{
+                                records:{
+                                    equipmentId:equipId,
+                                    equipmentName:equipName,
+                                    weight:weight,
+                                    times:times,
+                                    dateTime:nd
+                                }
+                            }
+                        }
+                    )
+                    return promise
+                }
+            },
+            (err)=>{
+                fail(err)
+            }
+        ).then(
+            (result)=>{
+                callback(result)
+            },
+            (err)=>{
                 fail(err)
             }
         )
@@ -155,6 +209,21 @@ exports.GetRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
         },
         (err) => {
             fail(err)
+        }
+    )
+}
+
+exports.InitializeBestRecords=(conn,psid,callback,fail)=>{
+    var promise=new conn.BestRecords({
+        psid:psid
+    }).save()
+
+    promise.then(
+        (success)=>{
+            callback(success)
+        },
+        (err)=>{
+            fail(er)
         }
     )
 }
