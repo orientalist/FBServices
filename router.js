@@ -81,6 +81,7 @@ router.post('/record', (req, res) => {
                 res.status(200).send({ code: 500 })
             },
             (result) => {
+                //console.log(result)
                 res.status(200).send({ code: 200 })
             })
     } catch (e) {
@@ -92,33 +93,79 @@ router.post('/GetRecordOfEquipment', (req, res) => {
     try {
         recordBl.GetRecordOfEquipment(connection, req.body,
             (records) => {
-                res.status(200).send({code:1,data:records})
+                res.status(200).send({ code: 1, data: records })
             },
             (err) => {
-                res.status(200).send({code:-1})
+                res.status(200).send({ code: -1 })
             }
         )
     }
     catch (e) {
-        res.status(200).send({code:-1})
+        res.status(200).send({ code: -1 })
     }
 })
 
-router.get('/GetRecordOfEquipment',(req,res)=>{
-    try{        
-        recordBl.GetRecordOfEquipment(connection,req.query['eqid'],req.query['psid'],
-            (records)=>{                                
-                for(be=0;be<records.length;be++){
-                    records[be].period_order=(be+1)                    
-                }                
-                res.status(200).send({data:records})
+router.get('/GetRecordOfEquipment', (req, res) => {
+    try {
+        recordBl.GetRecordOfEquipment(connection, req.query['eqid'], req.query['psid'],
+            (records) => {
+                for (be = 0; be < records.length; be++) {
+                    records[be].period_order = (be + 1)
+                }
+                res.status(200).send({ data: records })
             },
-            (err)=>{
-                res.status(200).send({data:[]})
+            (err) => {
+                res.status(200).send({ data: [] })
             }
         )
-    }catch(e){        
-        res.status(200).send({data:[]})
+    } catch (e) {
+        res.status(200).send({ data: [] })
+    }
+})
+
+router.get('/GetBestRecordOfEquipment', (req, res) => {
+    try {
+        recordBl.GetBestRecordOfEquipment(connection, req.query['eqid'], req.query['psid'],
+            (record) => {
+                if (record.length > 0) {
+                    var _record = record[0].records[0]
+                    var recordTime = _record.dateTime
+                    var recordTime_Str = `${recordTime.getFullYear()}/${recordTime.getMonth() + 1}/${recordTime.getDate()}`
+
+                    res.status(200).send({
+                        data: [{
+                            dateTime: recordTime_Str,
+                            weight: _record.weight,
+                            times: _record.times
+                        }]
+                    })
+                } else {
+                    res.status(200).send({ data: [] })
+                }
+            },
+            (err) => {
+                res.status(200).send({ data: [] })
+            }
+        )
+    } catch (e) {
+        res.status(200).send({ data: [] })
+    }
+})
+
+router.delete('/bestRecord', (req, res) => {
+    try {
+        var data = req.body
+        recordBl.DeleteBestRecord(connection, data.psid, data.equipmentId,
+            (success)=>{
+                res.status(200).send({code:1})
+            },
+            (err)=>{
+                res.status(200).send({code:-1})
+            }
+        )
+        res.status(200)
+    } catch (e) {
+        res.status(200).send({ code: -1 })
     }
 })
 

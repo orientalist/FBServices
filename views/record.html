@@ -3,30 +3,7 @@
 {{ block 'head' }}
 <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
 <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-<style>
-  img {
-    width: 75vw;
-    height: 25vh;
-  }
-
-  .flickity-page-dots {
-    bottom: 0px;
-  }
-
-  /* white circles */
-  .flickity-page-dots .dot {
-    width: 12px;
-    height: 12px;
-    opacity: 1;
-    background: transparent;
-    border: 2px solid white;
-  }
-
-  /* fill-in selected dot */
-  .flickity-page-dots .dot.is-selected {
-    background: white;
-  }
-</style>
+<link rel="stylesheet" href="/public/viewCss/record.css">
 {{ /block }}
 {{ block 'body' }}
 <!-- Begin Page Content -->
@@ -64,21 +41,61 @@
             </a>
           </p>
         </div>
-        <div>
-          <h6 class="m-0 font-weight-bold text-primary">該項目本日紀錄</h6>
-          <table style="margin-top: 5px;" id='tableTodayRecord'>
-            <thead>
-              <tr>
-                <th>循環</th>
-                <th>重量-磅/kg</th>
-                <th>次數</th>
-              </tr>
-            </thead>
-            <tbody>
 
-            </tbody>
-          </table>
+        <div class="card shoadow mb-4" style="margin-top:10px;">
+          <a href="#collapseTodayRecord" class="d-block card-header py-3" data-toggle='collapse' role='button'
+            aria-expanded="true" aria-controls="collapseTodayRecord">
+            <h6 class="m-0 font-weight-bold text-primary">該項目本日紀錄</h6>
+          </a>
+          <div class="collapse show" id='collapseTodayRecord'>
+            <div class="card-body">
+              <table id='tableTodayRecord'>
+                <thead>
+                  <tr>
+                    <th>循環</th>
+                    <th>重量</th>
+                    <th>次數</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
+
+        <div class="card shadow mb-4" style="margin-top: 10px;">
+          <!-- Card Header - Accordion -->
+          <a href="#collapseBestRecord" class="d-block card-header py-3" data-toggle="collapse" role="button"
+            aria-expanded="true" aria-controls="collapseBestRecord">
+            <h6 class="m-0 font-weight-bold text-primary">該項目最佳紀錄</h6>
+          </a>
+          <!-- Card Content - Collapse -->
+          <div class="collapse show" id="collapseBestRecord">
+            <a href="#" class="btn btn-danger btn-icon-split" style="float: right;margin: 10px;" id='btnDeleteBest'>
+              <span class="icon text-white-50">
+                <i class="fas fa-trash"></i>
+              </span>
+              <span class="text">刪除</span>
+            </a>
+            <div class="card-body">
+              <table id='tableBestRecord'>
+                <thead>
+                  <tr>
+                    <th>時間</th>
+                    <th>重量</th>
+                    <th>次數</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -88,79 +105,6 @@
 {{ block 'script' }}
 <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<script>
-  var flkty = null
-  var dataTable=null
-  $(document).ready(() => {
-    var carousel = $('.main-carousel').flickity({
-      cellAlign: 'left',
-      contain: true,
-      on: {
-        'change': () => {
-          fnGetRecordOfEquipment()
-        }
-      }
-    })
-    flkty = carousel.data('flickity')    
-    $('#aSend').click(function (e) {
-      e.preventDefault()
-      var data = {
-        psid: $('input[name="psid"]').val(),
-        equipment: $(flkty.selectedElement).attr('data-eqid'),
-        equipmentName: $(flkty.selectedElement).attr('data-equipName'),
-        weight: parseInt($('input[name="weight"]').val()),
-        times: parseInt($('input[name="times"]').val())
-      }
-      if (data.equipment.length <= 0) {
-        alert('請選擇器材')
-        return
-      }
-      if (isNaN(data.weight)) {
-        alert('請輸入重量')
-        return
-      }
-      if (isNaN(data.times)) {
-        alert('請輸入每組次數')
-        return
-      }
-      $.ajax({
-        url: '/record',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data)
-      }).done((result) => {
-        if (result.code === 200) {
-          fnGetRecordOfEquipment()
-        } else {
-          alert('伺服器忙碌中,請稍後再試')
-        }
-      })
-    })
-    fnInitializeTable()
-    fnGetRecordOfEquipment()
-  })
-  var fnGetRecordOfEquipment = () => {
-    var eqid = $(flkty.selectedElement).attr('data-eqid')
-    var psid = $('input[name="psid"]').val()
-    var url = `/GetRecordOfEquipment?eqid=${eqid}&psid=${psid}`
-    dataTable.ajax.url(url).load()
-  }
-  var fnInitializeTable = () => {
-    dataTable=$('#tableTodayRecord').DataTable({
-      'paging': false,
-      'info': false,
-      'searching': false,
-      'language':
-      {
-        'emptyTable':'本日尚未有紀錄'
-      },
-      'columns':[
-        {data:'period_order'},
-        {data:'weight'},
-        {data:'times'}
-      ]
-    })
-  }
-</script>
+<script src="/public/viewJs/record.js"></script>
 <!-- Page level plugins -->
 {{ /block }}

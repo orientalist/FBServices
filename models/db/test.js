@@ -1,5 +1,6 @@
 var connection = require('./Connection')
 var readLine = require('readline')
+var fs=require('fs')
 
 const readLineInterface = readLine.createInterface({
     input: process.stdin,
@@ -193,34 +194,6 @@ var GetCommand = (finish) => {
                         }
                     )
                     break
-                case 'rbe':
-                    var promise = connection.BestRecords.find(
-                        {
-                            psid: '2208236499223584',
-                            'records.equipmentId': '5d26e25dea8db21f505e2993'
-                        },
-                        {
-                            _id: 0,
-                            'records.$': 1
-                        }
-                    )
-
-                    promise.then(
-                        (result) => {
-                            if (result.length > 0) {
-                                console.log('recorded')
-                                var weight = result[0].records[0].weight
-                                console.log(weight)
-                            } else {
-                                console.log('no record')
-                            }
-                            finish(result)
-                        },
-                        (err) => {
-                            finish(result)
-                        }
-                    )
-                    break
                 case 'init':
                     var promise = new connection.BestRecords({
                         psid: '2208236499223584'
@@ -231,6 +204,30 @@ var GetCommand = (finish) => {
                             finish(success)
                         },
                         (err) => {
+                            finish(err)
+                        }
+                    )
+                    break
+                case 'pull':
+                    var promise=connection.BestRecords.update(
+                        {
+                            psid:'2208236499223584'
+                        },
+                        {
+                            $pull:{
+                                records:{
+                                    equipmentId:'5d2169a0ac36350000d8ed2c'
+                                }
+                            }
+                        }
+                    )
+                    promise.then(
+                        (success)=>{
+                            console.log('succ')
+                            finish(success)
+                        },
+                        (err)=>{
+                            console.log('err')
                             finish(err)
                         }
                     )
