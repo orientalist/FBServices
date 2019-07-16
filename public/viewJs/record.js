@@ -85,6 +85,28 @@ $(document).ready(() => {
             }
         })
     })
+    $('#btnDelete_Aft').click(function(e){
+        e.preventDefault();
+        var data={
+            psid:$('input[name="psid"]').val(),
+            id:$('#record_id').val(),
+            equipmentId: $(flkty.selectedElement).attr('data-eqid')
+        }
+        
+        $.ajax({
+            url:'/record',
+            type:'DELETE',
+            contentType:'application/json',
+            data:JSON.stringify(data)
+        }).done((result)=>{
+            if(result.code===1){
+                fnGetRecordOfEquipment()
+                $('#deleteRecord').modal('toggle')
+            }else{
+                alert('伺服器忙碌中,請稍後再試')
+            }
+        })
+    });
 })
 var fnGetRecordOfEquipment = () => {
     var eqid = $(flkty.selectedElement).attr('data-eqid')
@@ -103,13 +125,19 @@ var fnInitializeTable = () => {
             'emptyTable': '本日尚未有紀錄'
         },
         'columns': [
+            { 
+                data: '_id',
+                visible:false
+            },
             { data: 'period_order' },
             { data: 'weight' },
             { data: 'times' },
             {
                 data: null,
                 className: 'center',
-                defaultContent: ' <a href="#" data-toggle="modal" data-target="#deleteRecord" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>'
+                render:(data,type,row,meta)=>{
+                    return `<a href="#" data-toggle="modal" data-target="#deleteRecord" class="btn btn-danger btn-circle btn-sm" onclick="fnDeleteRow('${row._id}')"><i class="fas fa-trash"></i></a>`
+                }
             }
         ]
     })
@@ -142,4 +170,7 @@ var fnGetBestRecordOfEquipment = () => {
         }
     })
 
+}
+var fnDeleteRow=(element)=>{
+    $('#record_id').val(element);
 }

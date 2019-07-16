@@ -169,6 +169,22 @@ router.delete('/bestRecord', (req, res) => {
     }
 })
 
+router.delete('/record',(req,res)=>{
+    try{
+        var data=req.body
+        recordBl.DeleteRecord(connection, data.psid, data.id, data.equipmentId,
+            (success) => {
+                res.status(200).send({code:1})
+            },
+            (err) => {
+                res.status(200).send({code:-1})
+            }
+        )
+    }catch(e){
+        res.status(200).send({code:-1})
+    }
+})
+
 router.get('/test', (req, res) => {
     res.sendStatus(200)
 })

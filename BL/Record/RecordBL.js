@@ -197,7 +197,7 @@ exports.GetRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
     var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
     var nd = new Date(utc + (3600000 * 8))
     nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
-    //nd = new Date('2019-07-15T00:00:00.000+00:00')
+    //nd = new Date('2019-07-16T00:00:00.000+00:00')
 
     var promise = conn.RecordsByUsers.find({
         psid: psid,
@@ -280,6 +280,40 @@ exports.DeleteBestRecord=(connection, psid, equipmentId,callback,fail)=>{
         },
         (err)=>{
             fail(er)
+        }
+    )
+}
+
+exports.DeleteRecord = (connection, psid, id, equipmentId, callback, fail) => {
+    var _equipmentId = equipmentId.replace(/"/g, '')
+    var _psid = encryptCenter.Decrypt_AES192(psid)
+
+    var d = new Date()
+    var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
+    var nd = new Date(utc + (3600000 * 8))
+    nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
+    //nd = new Date('2019-07-16T00:00:00.000+00:00')
+    var promise = connection.RecordsByUsers.update(
+        {
+            psid:_psid,
+            equipmentId:_equipmentId,
+            dateTime:nd
+        },
+        {
+            $pull:{
+                recordsByPeriod:{
+                    _id:id
+                }
+            }
+        }
+    )
+
+    promise.then(
+        (succ)=>{
+            callback(succ)
+        },
+        (err)=>{
+            fail(err)
         }
     )
 }
