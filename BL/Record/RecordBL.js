@@ -168,7 +168,9 @@ exports.GetRecordOfEquipment = (conn, queryBody, callback, fail) => {
     var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
     var nd = new Date(utc + (3600000 * 8))
     nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
+    //nd=new Date('2019-07-15T00:00:00.000+00:00')
 
+    console.log(nd)
     var promise = conn.RecordsByUsers.find({
         psid: psid,
         dateTime: nd,
@@ -195,7 +197,7 @@ exports.GetRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
     var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
     var nd = new Date(utc + (3600000 * 8))
     nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
-    //nd = new Date('2019-07-11T00:00:00.000+00:00')
+    //nd = new Date('2019-07-15T00:00:00.000+00:00')
 
     var promise = conn.RecordsByUsers.find({
         psid: psid,
@@ -219,7 +221,6 @@ exports.GetRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
 
 exports.GetBestRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
     var psid = encryptCenter.Decrypt_AES192(psid)
-    console.log(eqid.replace(/"/g, ''))
     var promise = conn.BestRecords.find(
         {
             psid:psid,
@@ -233,7 +234,6 @@ exports.GetBestRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
 
     promise.then(
         (record)=>{
-            console.log(record)
             callback(record)
         },
         (err)=>{
