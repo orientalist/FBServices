@@ -123,6 +123,24 @@ router.get('/GetRecordOfEquipment', (req, res) => {
     }
 })
 
+router.get('/GetPreviousRecordOfEquipment',(req,res)=>{
+    try{
+        recordBl.GetPreviousRecordOfEquipment(connection,req.query['eqid'],req.query['psid'],
+            (records)=>{
+                for(be=0;be<records.length;be++){
+                    records[be].period_order=(be+1)
+                }
+                res.status(200).send({data:records})
+            },
+            (err)=>{
+                res.status(200).send({data:[]})
+            }
+        )
+    }catch(e){
+        res.status(200).send({data:[]})
+    }
+})
+
 router.get('/GetBestRecordOfEquipment', (req, res) => {
     try {
         recordBl.GetBestRecordOfEquipment(connection, req.query['eqid'], req.query['psid'],

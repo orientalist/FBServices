@@ -1,6 +1,7 @@
 var flkty = null
 var dataTable = null
 var dataTable_Best = null
+var dataTable_Previous=null
 $(document).ready(() => {
     var carousel = $('.main-carousel').flickity({
         cellAlign: 'left',
@@ -18,7 +19,7 @@ $(document).ready(() => {
             psid: $('input[name="psid"]').val(),
             equipment: $(flkty.selectedElement).attr('data-eqid'),
             equipmentName: $(flkty.selectedElement).attr('data-equipName'),
-            weight: parseInt($('input[name="weight"]').val()),
+            weight: parseFloat($('input[name="weight"]').val()),
             times: parseInt($('input[name="times"]').val())
         }
         if (data.equipment.length <= 0) {
@@ -41,6 +42,7 @@ $(document).ready(() => {
             alert('請勿輸入小於或等於零的數值')
             return
         }
+       
         $.ajax({
             url: '/record',
             type: 'POST',
@@ -114,6 +116,20 @@ var fnGetRecordOfEquipment = () => {
     var url = `/GetRecordOfEquipment?eqid=${eqid}&psid=${psid}`
     dataTable.ajax.url(url).load()
     fnGetBestRecordOfEquipment()
+    fnGetPreviousRecordOfEquipment()
+}
+var fnGetPreviousRecordOfEquipment=()=>{
+    $('#spPreviousTime').text('')
+    var eqid=$(flkty.selectedElement).attr('data-eqid')
+    var psid=$('input[name="psid"]').val()
+    var url=`/GetPreviousRecordOfEquipment?eqid=${eqid}&psid=${psid}`
+    dataTable_Previous.ajax.url(url).load((data)=>{
+        if(data.data.length>0){
+            var recordTime=new Date(data.data[0].period);
+            recordTime=`${recordTime.getFullYear()}/${recordTime.getMonth()}/${recordTime.getDate()}`
+            $('#spPreviousTime').text(recordTime)
+        }
+    })
 }
 var fnInitializeTable = () => {
     dataTable = $('#tableTodayRecord').DataTable({
@@ -157,6 +173,24 @@ var fnInitializeTable = () => {
         ]
     })
     $('.noArrow').css('background', 'none')
+    dataTable_Previous=$('#tablePreviousRecord').DataTable({
+        'paging': false,
+        'info': false,
+        'searching': false,
+        'language':
+        {
+            'emptyTable': '該項目尚無紀錄'
+        },
+        'columns': [
+            { 
+                data: 'period',
+                visible:false
+            },
+            { data: 'period_order' },
+            { data: 'weight' },
+            { data: 'times' }
+        ]
+    })
 }
 var fnGetBestRecordOfEquipment = () => {
     $('#btnDeleteBest_Pre').hide()

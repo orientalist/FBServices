@@ -232,6 +232,38 @@ var GetCommand = (finish) => {
                         }
                     )
                     break
+                    case 'near':
+                        
+                            var nd=new Date('2019-07-18T00:00:00.000+00:00')
+                        
+                            var promise=connection.RecordsByUsers.find(
+                                {
+                                    psid:'2208236499223584',
+                                    equipmentId:'5d1c44214eebee00000a0586',
+                                    recordsByPeriod:{
+                                        $gt:[]
+                                    },
+                                    dateTime:{
+                                        $lt:nd
+                                    }
+                                }
+                            ).sort({dateTime:-1}).limit(1).select({dateTime:1,recordsByPeriod:1,_id:0}).lean()
+
+                            promise.then(
+                                (records)=>{
+                                    if(records.length>0){
+                                        finish(records)
+                                        //finish(records[0].recordsByPeriod)
+                                    }else{
+                                        console.log('no data')
+                                        finish([])
+                                    }
+                                },
+                                (err)=>{
+                                    finish(err)
+                                }
+                            )
+                        break
                 default:
                     finish('Unknown Command')
                     break

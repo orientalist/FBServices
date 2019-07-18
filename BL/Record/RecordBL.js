@@ -170,7 +170,7 @@ exports.GetRecordOfEquipment = (conn, queryBody, callback, fail) => {
     nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
     //nd=new Date('2019-07-15T00:00:00.000+00:00')
 
-    console.log(nd)
+    //console.log(nd)
     var promise = conn.RecordsByUsers.find({
         psid: psid,
         dateTime: nd,
@@ -214,6 +214,42 @@ exports.GetRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
             }
         },
         (err) => {
+            fail(err)
+        }
+    )
+}
+
+exports.GetPreviousRecordOfEquipment=(conn,eqid,psid,callback,fail)=>{
+    var _psid=encryptCenter.Decrypt_AES192(psid)
+
+    var d=new Date()
+    var utc=d.getTime()+(d.getTimezoneOffset()*60000)
+    var nd=new Date(utc+(3600000*8))
+    nd=new Date(nd.getFullYear(),nd.getMonth(),nd.getDate())
+    //nd = new Date('2019-07-18T00:00:00.000+00:00')
+
+    var promise = conn.RecordsByUsers.find(
+        {
+            psid: _psid,
+            equipmentId: eqid.replace(/"/g,''),
+            recordsByPeriod: {
+                $gt: []
+            },
+            dateTime: {
+                $lt: nd
+            }
+        }
+    ).sort({ dateTime: -1 }).limit(1).select({ recordsByPeriod: 1, _id: 0 }).lean()
+
+    promise.then(
+        (records) => {
+            if (records.length > 0) {
+                callback(records[0].recordsByPeriod)
+            }else{
+                callback([])
+            }
+        },
+        (err)=>{
             fail(err)
         }
     )
