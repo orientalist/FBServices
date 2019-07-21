@@ -204,7 +204,20 @@ router.delete('/record',(req,res)=>{
 })
 
 router.get('/test', (req, res) => {
-    res.sendStatus(200)
+    try {
+        recordBl.GetUserProfile(req.query['pid'],
+            (profile) => {
+                var _profile = JSON.parse(profile)
+                _profile.id = encCenter.Encrypt_AES192(_profile.id)
+                res.render('chart.html', { User: _profile })
+            },
+            (err) => {
+                res.status(200).send(err)
+            })
+    }
+    catch (e) {
+        res.status(200).send(e)
+    }
 })
 
 module.exports = router

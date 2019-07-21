@@ -1,6 +1,6 @@
 var connection = require('./Connection')
 var readLine = require('readline')
-var fs=require('fs')
+var fs = require('fs')
 
 const readLineInterface = readLine.createInterface({
     input: process.stdin,
@@ -11,6 +11,34 @@ var GetCommand = (finish) => {
     readLineInterface.question('Please insert your command\n', (cmd) => {
         try {
             switch (cmd) {
+                case 'uet':
+                    try{
+
+                        var _promise=connection.RecordsByUsers.find(
+                            {
+                                psid:'2208236499223584',
+                                equipmentId:'5d26e38aea8db21f505e2994',
+                                recordsByPeriod: {
+                                    $gt: []
+                                }
+                            }
+                        )
+    
+                        _promise.then(
+                            (data)=>{
+                                console.log(data)
+                                finish(data)
+                            },
+                            (err)=>{
+                                console.log(err)
+                                finish(err)
+                            }
+                        )
+                    }
+                    catch(e){
+                        finish(e)
+                    }
+                    break
                 case 'record':
                     var d = new Date()
                     var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
@@ -121,24 +149,24 @@ var GetCommand = (finish) => {
                             if (record.length > 0) {
                                 var weight = record[0].records[0].weight
                                 if (31 > weight) {
-                                                                        
+
                                     var promise = connection.BestRecords.update(
                                         {
-                                            psid:'2208236499223584',
-                                            'records.equipmentId':'5d1c44214eebee00000a0586'
-                                        },{
-                                            $set:{
-                                                'records.$.weight':31,
-                                                'records.$.times':12,
-                                                'records.$.dateTime':nd
+                                            psid: '2208236499223584',
+                                            'records.equipmentId': '5d1c44214eebee00000a0586'
+                                        }, {
+                                            $set: {
+                                                'records.$.weight': 31,
+                                                'records.$.times': 12,
+                                                'records.$.dateTime': nd
                                             }
                                         }
-                                    )                                     
+                                    )
                                     return promise
                                 } else {
                                     finish('not bigger')
                                 }
-                            } else {                                
+                            } else {
                                 var promise = connection.BestRecords.update(
                                     {
                                         psid: '2208236499223584',
@@ -209,61 +237,61 @@ var GetCommand = (finish) => {
                     )
                     break
                 case 'pull':
-                    var promise=connection.BestRecords.update(
+                    var promise = connection.BestRecords.update(
                         {
-                            psid:'2208236499223584'
+                            psid: '2208236499223584'
                         },
                         {
-                            $pull:{
-                                records:{
-                                    equipmentId:'5d2169a0ac36350000d8ed2c'
+                            $pull: {
+                                records: {
+                                    equipmentId: '5d2169a0ac36350000d8ed2c'
                                 }
                             }
                         }
                     )
                     promise.then(
-                        (success)=>{
+                        (success) => {
                             console.log('succ')
                             finish(success)
                         },
-                        (err)=>{
+                        (err) => {
                             console.log('err')
                             finish(err)
                         }
                     )
                     break
-                    case 'near':
-                        
-                            var nd=new Date('2019-07-18T00:00:00.000+00:00')
-                        
-                            var promise=connection.RecordsByUsers.find(
-                                {
-                                    psid:'2208236499223584',
-                                    equipmentId:'5d1c44214eebee00000a0586',
-                                    recordsByPeriod:{
-                                        $gt:[]
-                                    },
-                                    dateTime:{
-                                        $lt:nd
-                                    }
-                                }
-                            ).sort({dateTime:-1}).limit(1).select({dateTime:1,recordsByPeriod:1,_id:0}).lean()
+                case 'near':
 
-                            promise.then(
-                                (records)=>{
-                                    if(records.length>0){
-                                        finish(records)
-                                        //finish(records[0].recordsByPeriod)
-                                    }else{
-                                        console.log('no data')
-                                        finish([])
-                                    }
-                                },
-                                (err)=>{
-                                    finish(err)
-                                }
-                            )
-                        break
+                    var nd = new Date('2019-07-18T00:00:00.000+00:00')
+
+                    var promise = connection.RecordsByUsers.find(
+                        {
+                            psid: '2208236499223584',
+                            equipmentId: '5d1c44214eebee00000a0586',
+                            recordsByPeriod: {
+                                $gt: []
+                            },
+                            dateTime: {
+                                $lt: nd
+                            }
+                        }
+                    ).sort({ dateTime: -1 }).limit(1).select({ dateTime: 1, recordsByPeriod: 1, _id: 0 }).lean()
+
+                    promise.then(
+                        (records) => {
+                            if (records.length > 0) {
+                                finish(records)
+                                //finish(records[0].recordsByPeriod)
+                            } else {
+                                console.log('no data')
+                                finish([])
+                            }
+                        },
+                        (err) => {
+                            finish(err)
+                        }
+                    )
+                    break
                 default:
                     finish('Unknown Command')
                     break
