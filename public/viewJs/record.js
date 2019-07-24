@@ -125,7 +125,7 @@ var fnGetPreviousRecordOfEquipment=()=>{
     var url=`/GetPreviousRecordOfEquipment?eqid=${eqid}&psid=${psid}`
     dataTable_Previous.ajax.url(url).load((data)=>{
         if(data.data.length>0){
-            var recordTime=new Date(data.data[0].period);
+            var recordTime=new Date((data.data[0].period).split('T')[0]);
             recordTime=`${recordTime.getFullYear()}/${recordTime.getMonth()+1}/${recordTime.getDate()}`
             $('#spPreviousTime').text(recordTime)
         }

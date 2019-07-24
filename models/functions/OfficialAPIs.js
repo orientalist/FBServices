@@ -12,7 +12,7 @@ exports.SendAPI = (sender_psid, response) => {
         },
         "message": response
     }
-
+    //console.log(JSON.stringify(request_body))
     request({
         'uri': 'https://graph.facebook.com/v2.6/me/messages',
         'qs': {

@@ -353,3 +353,50 @@ exports.DeleteRecord = (connection, psid, id, equipmentId, callback, fail) => {
         }
     )
 }
+
+exports.GetEquipmentHasRecord=(conn,sender_psid,callback,fail)=>{
+
+    var promise=conn.RecordsByUsers.distinct(
+        'equipmentId',
+        {
+            psid:sender_psid,
+            recordsByPeriod:{
+                $gt:[]
+            }
+        }
+    )
+
+    promise.then(
+        (data)=>{
+            if(data.length>0){
+                var promise=conn.Equipments.find(
+                    {
+                        'equipments._id':{
+                            $in:data
+                        }
+                    },{
+                        'equipments.$':1
+                    }
+                )
+
+                promise.then(
+                    (eqs)=>{
+                        var _eqs=[]
+                        eqs.forEach((eq)=>{
+                            _eqs=_eqs.concat(eq.equipments)
+                        })
+                        callback(_eqs)
+                    },
+                    (err)=>{
+                        fail(err)
+                    }
+                )
+            }else{
+                callback([])
+            }
+        },
+        (err)=>{
+            fail(err)
+        }
+    )
+}

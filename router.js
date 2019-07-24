@@ -130,6 +130,7 @@ router.get('/GetPreviousRecordOfEquipment',(req,res)=>{
                 for(be=0;be<records.length;be++){
                     records[be].period_order=(be+1)
                 }
+                console.log(records)
                 res.status(200).send({data:records})
             },
             (err)=>{

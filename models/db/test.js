@@ -1,6 +1,9 @@
 var connection = require('./Connection')
 var readLine = require('readline')
 var fs = require('fs')
+var officialAPIs = require('../functions/OfficialAPIs')
+var functionsByCmd = require('../functions/FunctionsByCmd')
+var objectId = require('mongoose').Types.ObjectId
 
 const readLineInterface = readLine.createInterface({
     input: process.stdin,
@@ -11,31 +14,96 @@ var GetCommand = (finish) => {
     readLineInterface.question('Please insert your command\n', (cmd) => {
         try {
             switch (cmd) {
-                case 'uet':
-                    try{
+                case 'car':
+                    functionsByCmd.Data({ type: 'workout' }, '2208236499223584', connection,
+                        (response) => {
+                            officialAPIs.SendAPI('2208236499223584', response)
+                        },
+                        (err) => {
+                            officialAPIs.SendAPI('2208236499223584', err)
+                        }
+                    )
+                    break
+                case 'ue':
+                    var promise = connection.RecordsByUsers.distinct(
+                        'equipmentId',
+                        {
+                            psid: '2208236499223584',
+                            recordsByPeriod: {
+                                $gt: []
+                            }
+                        }
+                    )
 
-                        var _promise=connection.RecordsByUsers.find(
+                    promise.then(
+                        (data) => {
+                            //console.log(data)
+                            if (data.length > 0) {
+
+
+                                var _promise = connection.Equipments.aggregate(
+                                    [
+                                        {
+                                            $project: {
+                                                equipments: {
+                                                    $filter: {
+                                                        input: '$equipments',
+                                                        as: 'equipments',
+                                                        cond:{$in:['$$equipments._id',[data[1]]]}
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                )
+
+                                _promise.then(
+                                    (eqs) => {
+                                        console.log(eqs)
+                                        //console.log(eqs)
+                                        var _eqs = []
+                                        eqs.forEach((eq) => {
+                                            //console.log(eq.equipments)
+                                            _eqs = _eqs.concat(eq.equipments)
+                                        })
+                                        finish(_eqs)
+                                    },
+                                    (err) => {
+                                        finish([])
+                                    }
+                                )
+                            } else {
+                                finish([])
+                            }
+                        },
+                        (err) => {
+                            finish([])
+                        }
+                    )
+                    break
+                case 'uet':
+                    try {
+
+                        var _promise = connection.RecordsByUsers.find(
                             {
-                                psid:'2208236499223584',
-                                equipmentId:'5d26e38aea8db21f505e2994',
+                                psid: '2208236499223584',
+                                equipmentId: '5d26e38aea8db21f505e2994',
                                 recordsByPeriod: {
                                     $gt: []
                                 }
                             }
-                        )
-    
+                        ).select({ dateTime: 1, _id: 0 }).lean()
+
                         _promise.then(
-                            (data)=>{
-                                console.log(data)
+                            (data) => {
                                 finish(data)
                             },
-                            (err)=>{
-                                console.log(err)
+                            (err) => {
                                 finish(err)
                             }
                         )
                     }
-                    catch(e){
+                    catch (e) {
                         finish(e)
                     }
                     break

@@ -83,3 +83,17 @@ exports.Buttons={
         return model
     }
 }
+exports.Carousel={
+    template:(elements)=>{
+        var model={
+            attachment:{
+                type:'template',
+                payload:{
+                    template_type:'generic',
+                    elements:elements
+                }
+            }
+        }
+        return model
+    }
+}
