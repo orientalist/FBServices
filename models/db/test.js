@@ -40,22 +40,35 @@ var GetCommand = (finish) => {
                             //console.log(data)
                             if (data.length > 0) {
 
+                                // var _promise = connection.Equipments.find(
+                                //     {
+                                //         'equipments._id':{
+                                //             $in:data
+                                //         }
+                                //     },
+                                //     {
+                                //         _id:0,
+                                //         'equipments.$':1
+                                //     }
+                                // )
 
-                                var _promise = connection.Equipments.aggregate(
-                                    [
-                                        {
-                                            $project: {
-                                                equipments: {
-                                                    $filter: {
-                                                        input: '$equipments',
-                                                        as: 'equipments',
-                                                        cond:{$in:['$$equipments._id',[data[1]]]}
-                                                    }
+                                for(i=0;i<data.length;i++){
+                                    data[i]=new objectId(data[i])
+                                }
+                                var _promise = connection.Equipments.aggregate([
+                                    {
+                                        $project: {
+                                            equipments:{
+                                                $filter:{
+                                                    input:'$equipments',
+                                                    as:'equipments',
+                                                    cond:{$in:['$$equipments._id',data]}
                                                 }
-                                            }
+                                            },
+                                            _id: 0,                                            
                                         }
-                                    ]
-                                )
+                                    }
+                                ])
 
                                 _promise.then(
                                     (eqs) => {

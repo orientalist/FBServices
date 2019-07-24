@@ -1,6 +1,7 @@
 var offifialApi = require('../../models/functions/OfficialAPIs')
 var encryptCenter = require('../../models/Encryption/EncryptionCenter')
 var equipmentBL = require('../../models/db/functions/equipmentBL')
+var objectId=require('mongoose').Types.ObjectId
 
 exports.GetUserProfile = (pid, postback, fail) => {
     var promise = offifialApi.GetUserProfile_Promise(encryptCenter.Decrypt_AES192(pid))
@@ -369,15 +370,23 @@ exports.GetEquipmentHasRecord=(conn,sender_psid,callback,fail)=>{
     promise.then(
         (data)=>{
             if(data.length>0){
-                var promise=conn.Equipments.find(
+                for(i=0;i<data.length;i++){
+                    data[i]=new objectId(data[i])
+                }
+                var promise=conn.Equipments.aggregate([
                     {
-                        'equipments._id':{
-                            $in:data
+                        $project:{
+                            equipments:{
+                                $filter:{
+                                    input:'$equipments',
+                                    as:'equipments',
+                                    cond:{$in:['$$equipments._id',data]}
+                                }
+                            },
+                            _id:0
                         }
-                    },{
-                        'equipments.$':1
                     }
-                )
+                ])
 
                 promise.then(
                     (eqs)=>{
