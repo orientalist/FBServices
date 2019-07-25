@@ -1,7 +1,7 @@
 var offifialApi = require('../../models/functions/OfficialAPIs')
 var encryptCenter = require('../../models/Encryption/EncryptionCenter')
 var equipmentBL = require('../../models/db/functions/equipmentBL')
-var objectId=require('mongoose').Types.ObjectId
+var objectId = require('mongoose').Types.ObjectId
 
 exports.GetUserProfile = (pid, postback, fail) => {
     var promise = offifialApi.GetUserProfile_Promise(encryptCenter.Decrypt_AES192(pid))
@@ -220,19 +220,19 @@ exports.GetRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
     )
 }
 
-exports.GetPreviousRecordOfEquipment=(conn,eqid,psid,callback,fail)=>{
-    var _psid=encryptCenter.Decrypt_AES192(psid)
+exports.GetPreviousRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
+    var _psid = encryptCenter.Decrypt_AES192(psid)
 
-    var d=new Date()
-    var utc=d.getTime()+(d.getTimezoneOffset()*60000)
-    var nd=new Date(utc+(3600000*8))
-    nd=new Date(nd.getFullYear(),nd.getMonth(),nd.getDate())
+    var d = new Date()
+    var utc = d.getTime() + (d.getTimezoneOffset() * 60000)
+    var nd = new Date(utc + (3600000 * 8))
+    nd = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate())
     //nd = new Date('2019-07-18T00:00:00.000+00:00')
 
     var promise = conn.RecordsByUsers.find(
         {
             psid: _psid,
-            equipmentId: eqid.replace(/"/g,''),
+            equipmentId: eqid.replace(/"/g, ''),
             recordsByPeriod: {
                 $gt: []
             },
@@ -246,11 +246,11 @@ exports.GetPreviousRecordOfEquipment=(conn,eqid,psid,callback,fail)=>{
         (records) => {
             if (records.length > 0) {
                 callback(records[0].recordsByPeriod)
-            }else{
+            } else {
                 callback([])
             }
         },
-        (err)=>{
+        (err) => {
             fail(err)
         }
     )
@@ -260,20 +260,20 @@ exports.GetBestRecordOfEquipment = (conn, eqid, psid, callback, fail) => {
     var psid = encryptCenter.Decrypt_AES192(psid)
     var promise = conn.BestRecords.find(
         {
-            psid:psid,
-            'records.equipmentId':eqid.replace(/"/g, '')
+            psid: psid,
+            'records.equipmentId': eqid.replace(/"/g, '')
         },
         {
-            _id:0,
-            'records.$':1
+            _id: 0,
+            'records.$': 1
         }
     )
 
     promise.then(
-        (record)=>{
+        (record) => {
             callback(record)
         },
-        (err)=>{
+        (err) => {
             fail(err)
         }
     )
@@ -294,28 +294,28 @@ exports.InitializeBestRecords = (conn, psid, callback, fail) => {
     )
 }
 
-exports.DeleteBestRecord=(connection, psid, equipmentId,callback,fail)=>{
-    var _equipmentId=equipmentId.replace(/"/g,'')
-    var _psid=encryptCenter.Decrypt_AES192(psid)
+exports.DeleteBestRecord = (connection, psid, equipmentId, callback, fail) => {
+    var _equipmentId = equipmentId.replace(/"/g, '')
+    var _psid = encryptCenter.Decrypt_AES192(psid)
 
-    var promise=connection.BestRecords.update(
+    var promise = connection.BestRecords.update(
         {
-            psid:_psid
+            psid: _psid
         },
         {
-            $pull:{
-                records:{
-                    equipmentId:_equipmentId
+            $pull: {
+                records: {
+                    equipmentId: _equipmentId
                 }
             }
         }
     )
 
     promise.then(
-        (succe)=>{
+        (succe) => {
             callback(succe)
         },
-        (err)=>{
+        (err) => {
             fail(er)
         }
     )
@@ -332,80 +332,132 @@ exports.DeleteRecord = (connection, psid, id, equipmentId, callback, fail) => {
     //nd = new Date('2019-07-16T00:00:00.000+00:00')
     var promise = connection.RecordsByUsers.update(
         {
-            psid:_psid,
-            equipmentId:_equipmentId,
-            dateTime:nd
+            psid: _psid,
+            equipmentId: _equipmentId,
+            dateTime: nd
         },
         {
-            $pull:{
-                recordsByPeriod:{
-                    _id:id
+            $pull: {
+                recordsByPeriod: {
+                    _id: id
                 }
             }
         }
     )
 
     promise.then(
-        (succ)=>{
+        (succ) => {
             callback(succ)
         },
-        (err)=>{
+        (err) => {
             fail(err)
         }
     )
 }
 
-exports.GetEquipmentHasRecord=(conn,sender_psid,callback,fail)=>{
+exports.GetEquipmentHasRecord = (conn, sender_psid, callback, fail) => {
 
-    var promise=conn.RecordsByUsers.distinct(
+    var promise = conn.RecordsByUsers.distinct(
         'equipmentId',
         {
-            psid:sender_psid,
-            recordsByPeriod:{
-                $gt:[]
+            psid: sender_psid,
+            recordsByPeriod: {
+                $gt: []
             }
         }
     )
 
     promise.then(
-        (data)=>{
-            if(data.length>0){
-                for(i=0;i<data.length;i++){
-                    data[i]=new objectId(data[i])
+        (data) => {
+            if (data.length > 0) {
+                for (i = 0; i < data.length; i++) {
+                    data[i] = new objectId(data[i])
                 }
-                var promise=conn.Equipments.aggregate([
+                var promise = conn.Equipments.aggregate([
                     {
-                        $project:{
-                            equipments:{
-                                $filter:{
-                                    input:'$equipments',
-                                    as:'equipments',
-                                    cond:{$in:['$$equipments._id',data]}
+                        $project: {
+                            equipments: {
+                                $filter: {
+                                    input: '$equipments',
+                                    as: 'equipments',
+                                    cond: { $in: ['$$equipments._id', data] }
                                 }
                             },
-                            _id:0
+                            _id: 0
                         }
                     }
                 ])
 
                 promise.then(
-                    (eqs)=>{
-                        var _eqs=[]
-                        eqs.forEach((eq)=>{
-                            _eqs=_eqs.concat(eq.equipments)
+                    (eqs) => {
+                        var _eqs = []
+                        eqs.forEach((eq) => {
+                            _eqs = _eqs.concat(eq.equipments)
                         })
                         callback(_eqs)
                     },
-                    (err)=>{
+                    (err) => {
                         fail(err)
                     }
                 )
-            }else{
+            } else {
                 callback([])
             }
         },
-        (err)=>{
+        (err) => {
             fail(err)
+        }
+    )
+}
+
+exports.GetEquipmentById = (conn, eqid, callback, fail) => {
+    var promise = conn.Equipments.find(
+        {
+            'equipments._id': eqid
+        },
+        {
+            _id: 0,
+            'equipments.$': 1
+        }
+    ).lean()
+    promise.then(
+        (equipment) => {
+            if (equipment.length > 0) {
+                callback(equipment[0].equipments[0])
+            } else {
+                fail('404')
+            }
+        },
+        (err) => {
+            fail(err)
+        }
+    )
+}
+
+exports.GetDatetimeOfEquipment = (conn, eqid, psid, callback, fail) => {
+    var _promise = conn.RecordsByUsers.find(
+        {
+            psid: psid,
+            equipmentId: eqid,
+            recordsByPeriod: {
+                $gt: []
+            }
+        }
+    ).select({ dateTime: 1, _id: 1 }).lean()
+
+    _promise.then(
+        (data) => {
+            if(data.length>0){
+                data.forEach((i) => {
+                    i.dateTime = i.dateTime.toISOString().split('T')[0]
+                })
+                callback(data)
+            }else{
+                fail([])
+            }
+        },
+        (err) => {
+            fail([])
         }
     )
 }

@@ -1,0 +1,81 @@
+{{ extend './_layouts/home.html' }}
+{{ block 'title' }}{{ '運動數據' }}{{ /block }}
+{{ block 'head' }}
+
+
+{{ /block }}
+{{ block 'body' }}
+<!-- Begin Page Content -->
+<input type="hidden" name="EquipmentId" value="{{ Equipment._id }}">
+<input type="hidden" name="psid" value="{{ User.id }}">
+<div class="container-fluid">
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">運動紀錄: {{ Equipment.name }}</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive" style="text-align: center;">
+                <div class="dropdown mb-4">
+                    <img src="{{ Equipment.picUrl }}" style="height: 20vh;">
+                </div>
+                <div class="dropdown mb-4">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownQueryDate"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span id='queryDate'>請選擇日期</span>
+                    </button>
+                    <div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownQueryDate">
+                        {{ each RecordTimes}}
+                        <a data-date='{{ $value.dateTime }}' data-id="{{ $value._id }}" class="dropdown-item" href="#">{{ $value.dateTime }}</a>
+                        {{ /each }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card shoadow mb-4">
+        <a href="#collapseDataByWeight" class="d-block card-header py-3" data-toggle='collapse' role='button'
+            aria-expanded="true" aria-controls="collapseDataByWeight">
+            <h6 class="m-0 font-weight-bold text-primary">該項目 重量 數據</h6>
+        </a>
+        <div class="collapse show" id='collapseDataByWeight'>
+            <div class="card-body">
+                test
+            </div>
+        </div>
+    </div>
+
+    <div class="card shoadow mb-4">
+        <a href="#collapseDataByTimes" class="d-block card-header py-3" data-toggle='collapse' role='button'
+            aria-expanded="true" aria-controls="collapseDataByTimes">
+            <h6 class="m-0 font-weight-bold text-primary">該項目 次數 數據</h6>
+        </a>
+        <div class="collapse show" id='collapseDataByTimes'>
+            <div class="card-body">
+                test
+            </div>
+        </div>
+    </div>
+
+    <div class="card shoadow mb-4">
+        <a href="#collapseDataByEfficient" class="d-block card-header py-3" data-toggle='collapse' role='button'
+            aria-expanded="true" aria-controls="collapseDataByEfficient">
+            <h6 class="m-0 font-weight-bold text-primary">該項目 績效 數據</h6>
+        </a>
+        <div class="collapse show" id='collapseDataByEfficient'>
+            <div class="card-body">
+                test
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+{{ /block }}
+{{ block 'script' }}
+
+<script src="/public/viewJs/recordByEquipment.js"></script>
+<!-- Page level plugins -->
+{{ /block }}

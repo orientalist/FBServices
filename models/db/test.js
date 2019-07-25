@@ -14,6 +14,25 @@ var GetCommand = (finish) => {
     readLineInterface.question('Please insert your command\n', (cmd) => {
         try {
             switch (cmd) {
+                case 'eq':
+                     var promise=connection.Equipments.find(
+                        {
+                            'equipments._id':'5d1c44214eebee00000a0586'
+                        },
+                        {
+                            _id:0,
+                            'equipments.$':1
+                        }
+                    )
+                    promise.then(
+                        (equipment)=>{
+                            finish(equipment[0].equipments[0])
+                        },
+                        (err)=>{
+                            finish(err)
+                        }
+                    )
+                    break
                 case 'car':
                     functionsByCmd.Data({ type: 'workout' }, '2208236499223584', connection,
                         (response) => {
@@ -40,17 +59,7 @@ var GetCommand = (finish) => {
                             //console.log(data)
                             if (data.length > 0) {
 
-                                // var _promise = connection.Equipments.find(
-                                //     {
-                                //         'equipments._id':{
-                                //             $in:data
-                                //         }
-                                //     },
-                                //     {
-                                //         _id:0,
-                                //         'equipments.$':1
-                                //     }
-                                // )
+                               
 
                                 for(i=0;i<data.length;i++){
                                     data[i]=new objectId(data[i])
@@ -105,10 +114,13 @@ var GetCommand = (finish) => {
                                     $gt: []
                                 }
                             }
-                        ).select({ dateTime: 1, _id: 0 }).lean()
+                        ).select({ dateTime: 1, _id: 1 }).lean()
 
                         _promise.then(
                             (data) => {
+                                data.forEach((i)=>{
+                                    i.dateTime=i.dateTime.toISOString().split('T')[0]
+                                })
                                 finish(data)
                             },
                             (err) => {

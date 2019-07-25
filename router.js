@@ -73,6 +73,43 @@ router.get('/record', (req, res) => {
     }
 })
 
+router.get('/data',(req,res)=>{
+    try{
+        recordBl.GetUserProfile(req.query['pid'],
+            (profile)=>{
+                var _profile=JSON.parse(profile)
+                var originalPsid=_profile.id
+                _profile.id=encCenter.Encrypt_AES192(_profile.id)
+                switch(req.query['type']){
+                    case 'workout':
+                        recordBl.GetEquipmentById(connection,req.query['subPartition'],
+                            (equipment)=>{
+                                recordBl.GetDatetimeOfEquipment(connection,req.query['subPartition'],originalPsid,
+                                    (times)=>{                                  
+                                        res.render('RecordByEquipment.html',{User:_profile,Equipment:equipment,RecordTimes:times})
+                                    },
+                                    (err)=>{
+                                        res.status(200).send(err)
+                                    }
+                                )
+                            },
+                            (err)=>{
+                                res.status(200).send(err)
+                            }
+                        )
+                    break
+                }
+            },
+            (err)=>{
+                res.status(200).send(err)
+            }
+        )
+    }
+    catch(e){
+        res.status(200).send(e)
+    }
+})
+
 router.post('/record', (req, res) => {
     try {
         var body = req.body
@@ -218,6 +255,14 @@ router.get('/test', (req, res) => {
     }
     catch (e) {
         res.status(200).send(e)
+    }
+})
+
+router.get('/DataByDate',(req,res)=>{
+    try{
+        
+    }catch(e){
+        
     }
 })
 
