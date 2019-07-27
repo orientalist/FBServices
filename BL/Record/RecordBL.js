@@ -461,3 +461,30 @@ exports.GetDatetimeOfEquipment = (conn, eqid, psid, callback, fail) => {
         }
     )
 }
+
+exports.GetDataByDate=(conn,queryBody,callback,fail)=>{
+    
+    var promise=conn.RecordsByUsers.findOne({
+        psid:encryptCenter.Decrypt_AES192(queryBody.psid),
+        equipmentId:queryBody.eqid.replace(/"/g,''),
+        _id:queryBody.dtid.replace(/"/g,'')
+    },{
+        _id:0,
+        recordsByPeriod:1
+    })
+
+
+
+    promise.then(
+       (data)=>{
+           if(data.recordsByPeriod.length>0){
+               callback(data.recordsByPeriod)
+           }else{
+               callback([])
+           }
+       },
+       (err)=>{
+           fail(err)
+       }
+    )
+}

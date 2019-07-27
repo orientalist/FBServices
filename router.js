@@ -167,7 +167,7 @@ router.get('/GetPreviousRecordOfEquipment',(req,res)=>{
                 for(be=0;be<records.length;be++){
                     records[be].period_order=(be+1)
                 }
-                console.log(records)
+                
                 res.status(200).send({data:records})
             },
             (err)=>{
@@ -258,11 +258,21 @@ router.get('/test', (req, res) => {
     }
 })
 
-router.get('/DataByDate',(req,res)=>{
-    try{
+router.post('/DataByDate',(req,res)=>{
+    try{        
+        var queryBody=req.body
         
+        recordBl.GetDataByDate(connection,queryBody,
+            (data)=>{
+                res.status(200).send({code:1,data:data})
+            },
+            (err)=>{
+                res.status(200).send({code:-1,data:err})
+            }
+        )
+                
     }catch(e){
-        
+        res.status(200).send({code:-1,data:e})
     }
 })
 

@@ -26,47 +26,43 @@
                     </button>
                     <div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownQueryDate">
                         {{ each RecordTimes}}
-                        <a data-date='{{ $value.dateTime }}' data-id="{{ $value._id }}" class="dropdown-item" href="#">{{ $value.dateTime }}</a>
+                        <a data-date='{{ $value.dateTime }}' data-id="{{ $value._id }}" class="dropdown-item"
+                            href="#">{{ $value.dateTime }}</a>
                         {{ /each }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
     <div class="card shoadow mb-4">
-        <a href="#collapseDataByWeight" class="d-block card-header py-3" data-toggle='collapse' role='button'
-            aria-expanded="true" aria-controls="collapseDataByWeight">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold text-primary">該項目 重量 數據</h6>
-        </a>
+        </div>
         <div class="collapse show" id='collapseDataByWeight'>
-            <div class="card-body">
-                test
+            <div class="card-body" id='divWeight'>
+
             </div>
         </div>
     </div>
 
     <div class="card shoadow mb-4">
-        <a href="#collapseDataByTimes" class="d-block card-header py-3" data-toggle='collapse' role='button'
-            aria-expanded="true" aria-controls="collapseDataByTimes">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold text-primary">該項目 次數 數據</h6>
-        </a>
+        </div>
         <div class="collapse show" id='collapseDataByTimes'>
-            <div class="card-body">
-                test
+            <div class="card-body" id='divTimes'>
+
             </div>
         </div>
     </div>
 
     <div class="card shoadow mb-4">
-        <a href="#collapseDataByEfficient" class="d-block card-header py-3" data-toggle='collapse' role='button'
-            aria-expanded="true" aria-controls="collapseDataByEfficient">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold text-primary">該項目 績效 數據</h6>
-        </a>
+        </div>
         <div class="collapse show" id='collapseDataByEfficient'>
-            <div class="card-body">
-                test
+            <div class="card-body" id='divEfficiency'>
+
             </div>
         </div>
     </div>
@@ -75,7 +71,7 @@
 <!-- /.container-fluid -->
 {{ /block }}
 {{ block 'script' }}
-
+<script src="/public/vendor/chart.js/Chart.min.js"></script>
 <script src="/public/viewJs/recordByEquipment.js"></script>
 <!-- Page level plugins -->
 {{ /block }}

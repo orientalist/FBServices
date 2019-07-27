@@ -14,8 +14,27 @@ var GetCommand = (finish) => {
     readLineInterface.question('Please insert your command\n', (cmd) => {
         try {
             switch (cmd) {
+                case 'dd':
+                    var promise=connection.RecordsByUsers.findOne({
+                        psid:'2208236499223584',
+                        equipmentId:'5d26e38aea8db21f505e2994',
+                        _id:'5d26ed4aab5a6899a68678fe'
+                    },{
+                        _id:0,
+                        recordsByPeriod:1
+                    })
+
+                    promise.then(
+                        (data)=>{
+                            finish(data.recordsByPeriod)
+                        },
+                        (err)=>{
+                            finish(err)
+                        }
+                    )
+                    break
                 case 'eq':
-                     var promise=connection.Equipments.find(
+                    var promise = connection.Equipments.find(
                         {
                             'equipments._id':'5d1c44214eebee00000a0586'
                         },
