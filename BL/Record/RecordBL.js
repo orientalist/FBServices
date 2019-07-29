@@ -534,3 +534,45 @@ exports.GetTrend=(conn,queryBody,callback,fail)=>{
         }
     )
 }
+
+exports.GetTimesOfEquipmets=(conn,psid,callback,fail)=>{
+    var promise=conn.RecordsByUsers.aggregate(
+        [
+            {
+                $match:{
+                    psid:psid,
+                    recordsByPeriod:{$gt:[]}
+                }
+            },
+            {
+                $group:{
+                    _id:'$equipmentId',
+                    totalTimes:{
+                        $sum:{
+                            $sum:'$recordsByPeriod.times'
+                        }
+                    }
+                }
+            },
+            {
+                $project:{
+                    _id:1,
+                    value:'$totalTimes'
+                }
+            }
+        ]
+    )
+
+    promise.then(
+        (data)=>{
+            if(data.length>0){
+                callback(data)
+            }else{
+                callback([])
+            }
+        },
+        (err)=>{
+            fail(err)
+        }
+    )
+}

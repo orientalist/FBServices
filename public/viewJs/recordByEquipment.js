@@ -10,6 +10,7 @@ $(document).ready(() => {
         queryDate = $(this).attr('data-id')
         if (queryDate != lastDate) {
             fnQueryData(psid, equipmentId, queryDate)
+            $('.recordDate').text($(this).attr('data-date'))
         }
     })
     fnQueryTrend(psid,equipmentId)

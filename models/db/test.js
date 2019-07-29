@@ -14,6 +14,100 @@ var GetCommand = (finish) => {
     readLineInterface.question('Please insert your command\n', (cmd) => {
         try {
             switch (cmd) {
+                case 'cir':
+                    var promise = connection.RecordsByUsers.aggregate(
+                        [
+                            {
+                                $match: {
+                                    psid: '2208236499223584',
+                                    recordsByPeriod: { $gt: [] }
+                                }
+                            },
+                            {
+                                $group: {
+                                    _id: {
+                                        _id:'$equipmentId',
+                                        equipmentName:'$equipmentName'
+                                    },
+                                    totalTimes: {
+                                        $sum: {
+                                            $sum: '$recordsByPeriod.times'
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    equipmentName:'$equipmentName',
+                                    value: '$totalTimes'
+                                }
+                            }
+                        ]
+                    )
+                    promise.then(
+                        (data) => {
+                            console.log(data)
+                            if (data.length > 0) {
+                                var records=data
+                                var eqids = records.map(d => d._id)
+                                for(i=0;i<eqids.length;i++){
+                                    eqids[i]=new objectId(eqids[i])
+                                }                                
+                                
+                                var promise = connection.Equipments.aggregate(
+                                    [
+                                        {
+                                            $match: {
+                                                'equipments._id':{
+                                                    $in:eqids
+                                                }
+                                            }                                            
+                                        },{
+                                            $group:{
+                                                _id:'$belongTo',
+                                                equipments:{
+                                                    $push:'$equipments._id'
+                                                }
+                                            }
+                                        },{
+                                            $project:{
+                                                _id:1,
+                                                equipments:{
+                                                    $reduce:{
+                                                        input:'$equipments',
+                                                        initialValue:[],
+                                                        in:{$concatArrays:['$$value','$$this']}
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                )
+                                promise.then(
+                                    (data) => {
+                                        if(data.length>0){
+                                            data.forEach((partition)=>{
+                                                partition.totalTimes=0
+                                            })
+                                            
+                                            records.forEach((elements)=>{
+                                                
+                                            })
+                                        }
+                                        finish(data)
+                                    },
+                                    (err) => {
+                                        finish(err)
+                                    }
+                                )
+                            }
+                        },
+                        (err) => {
+                            finish(err)
+                        }
+                    )
+                    break
                 case 'trend':
                     var promise = connection.RecordsByUsers.find({
                         psid: '2208236499223584',
@@ -27,6 +121,7 @@ var GetCommand = (finish) => {
 
                     promise.then(
                         (rec) => {
+                            finish(data)
                             if (rec.length > 0) {
                                 var weight = []
                                 var effifiency = []
@@ -145,8 +240,6 @@ var GetCommand = (finish) => {
 
                                 _promise.then(
                                     (eqs) => {
-                                        console.log(eqs)
-                                        //console.log(eqs)
                                         var _eqs = []
                                         eqs.forEach((eq) => {
                                             //console.log(eq.equipments)
