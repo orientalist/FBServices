@@ -23,131 +23,144 @@
 <script>
     var myLineChart
     $(document).ready(() => {
-        $('#btnChanfeData').click(function () { 
-            var arrs=[
-                {period:1,value:70},
-                {period:2,value:80},
-                {period:3,value:60},
-                {period:4,value:60},
+        $('#btnChanfeData').click(function () {
+            var arrs = [
+                { period: 1, value: 70 },
+                { period: 2, value: 80 },
+                { period: 3, value: 60 },
+                { period: 4, value: 60 },
             ]
-            fnInitializeChart('測試',arrs)
+            fnInitializeChart('測試', arrs)
         });
-        $('#btnPiechart').click(function(e){
+        $('#btnPiechart').click(function (e) {
             e.preventDefault()
-            fnInitializePieChart(['一','二','三'],[4590,3541,1478])
+            fnInitializePieChart(['一', '二', '三'], [4590, 3541, 1478])
         })
-        var fnInitializePieChart=(labels,data)=>{
-            var ctxP=document.getElementById('pieChart').getContext('2d')
-            var pieChart=new Chart(ctxP,{
-                type:'pie',
-                data:{
-                    labels:labels,
-                    datasets:[{
-                        data:data,
-                        backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
-                        hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
-                    }]
-                },
-                options:{
-                    responsive:true
-                }
-            })
+        console.log(fnGenetateColors(20))
+    })
+    var fnGenetateColors=(count)=>{
+        var outputColors=[]
+        var letters='0123456789ABCDEF'
+        for(i=1;i<=count;i++){
+            var colorStr=''
+            for(be=0;be<6;be++){
+                colorStr+=letters[(Math.floor(Math.random()*16))]
+            }
+            outputColors.push(`#${colorStr}`)
         }
-        var fnInitializeChart = (_label, periodAndValue) => {
-            var ctx = document.getElementById("myAreaChart");
-            var periods=[]
-            var values=[]
-            periods.push(0)
-            values.push(0)
-            $.each(periodAndValue,(index,value)=>{
-                periods.push(value.period)
-                values.push(value.value)
-            })
-            myLineChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: periods,
-                    datasets: [{
-                        label: _label,
-                        lineTension: 0,
-                        backgroundColor: "rgba(78, 115, 223, 0.05)",
-                        borderColor: "rgba(78, 115, 223, 1)",
-                        pointRadius: 3,
-                        pointBackgroundColor: "rgba(78, 115, 223, 1)",
-                        pointBorderColor: "rgba(78, 115, 223, 1)",
-                        pointHoverRadius: 3,
-                        pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-                        pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-                        pointHitRadius: 10,
-                        pointBorderWidth: 2,
-                        data: values,
+        return outputColors
+    }
+    var fnInitializePieChart = (labels, data) => {
+        var ctxP = document.getElementById('pieChart').getContext('2d')
+        var pieChart = new Chart(ctxP, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+                    hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        })
+    }
+    var fnInitializeChart = (_label, periodAndValue) => {
+        var ctx = document.getElementById("myAreaChart");
+        var periods = []
+        var values = []
+        periods.push(0)
+        values.push(0)
+        $.each(periodAndValue, (index, value) => {
+            periods.push(value.period)
+            values.push(value.value)
+        })
+        myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: periods,
+                datasets: [{
+                    label: _label,
+                    lineTension: 0,
+                    backgroundColor: "rgba(78, 115, 223, 0.05)",
+                    borderColor: "rgba(78, 115, 223, 1)",
+                    pointRadius: 3,
+                    pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHoverRadius: 3,
+                    pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                    data: values,
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 25,
+                        bottom: 0
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        time: {
+                            unit: 'number'
+                        },
+                        gridLines: {
+                            display: true,
+                            drawBorder: true
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            padding: 10,
+                            // Include a dollar sign in the ticks
+                            callback: function (value, index, values) {
+                                return `${value}`;
+                            }
+                        },
+                        gridLines: {
+                            color: "rgb(234, 236, 244)",
+                            zeroLineColor: "rgb(234, 236, 244)",
+                            drawBorder: true,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
                     }],
                 },
-                options: {
-                    maintainAspectRatio: false,
-                    layout: {
-                        padding: {
-                            left: 10,
-                            right: 25,
-                            top: 25,
-                            bottom: 0
-                        }
-                    },
-                    scales: {
-                        xAxes: [{
-                            time: {
-                                unit: 'number'
-                            },
-                            gridLines: {
-                                display: true,
-                                drawBorder: true
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                padding: 10,
-                                // Include a dollar sign in the ticks
-                                callback: function (value, index, values) {
-                                    return `${value}`;
-                                }
-                            },
-                            gridLines: {
-                                color: "rgb(234, 236, 244)",
-                                zeroLineColor: "rgb(234, 236, 244)",
-                                drawBorder: true,
-                                borderDash: [2],
-                                zeroLineBorderDash: [2]
-                            }
-                        }],
-                    },
-                    legend: {
-                        display: false
-                    },
-                    tooltips: {
-                        backgroundColor: "rgb(255,255,255)",
-                        bodyFontColor: "#858796",
-                        titleMarginBottom: 10,
-                        titleFontColor: '#6e707e',
-                        titleFontSize: 14,
-                        borderColor: '#dddfeb',
-                        borderWidth: 1,
-                        xPadding: 15,
-                        yPadding: 15,
-                        displayColors: false,
-                        intersect: false,
-                        mode: 'index',
-                        caretPadding: 10,
-                        callbacks: {
-                            label: function (tooltipItem, chart) {
-                                var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                                return `${datasetLabel}: 重量${tooltipItem.yLabel}`;
-                            }
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    titleMarginBottom: 10,
+                    titleFontColor: '#6e707e',
+                    titleFontSize: 14,
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    intersect: false,
+                    mode: 'index',
+                    caretPadding: 10,
+                    callbacks: {
+                        label: function (tooltipItem, chart) {
+                            var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                            return `${datasetLabel}: 重量${tooltipItem.yLabel}`;
                         }
                     }
                 }
-            });
-        }
-    })
+            }
+        });
+    }
 </script>
 <!-- Page level plugins -->
 {{ /block }}

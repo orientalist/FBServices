@@ -27,5 +27,14 @@ exports.process = (sender_psid, received_postback, conn) => {
                     officialAPIs.SendAPI(sender_psid, err)
                 })
             break
+        case 'comprehensiveData':
+            response=functionsByCmd.ComprehensiveData(_request,sender_psid,conn,
+                (template)=>{
+                    officialAPIs.SendAPI(sender_psid,template)
+                },
+                (err)=>{
+                    officialAPIs.SendAPI(sender_psid,err)
+                })
+            break
     }
 }

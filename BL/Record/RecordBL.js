@@ -447,12 +447,12 @@ exports.GetDatetimeOfEquipment = (conn, eqid, psid, callback, fail) => {
 
     _promise.then(
         (data) => {
-            if(data.length>0){
+            if (data.length > 0) {
                 data.forEach((i) => {
                     i.dateTime = i.dateTime.toISOString().split('T')[0]
                 })
                 callback(data)
-            }else{
+            } else {
                 fail([])
             }
         },
@@ -462,114 +462,142 @@ exports.GetDatetimeOfEquipment = (conn, eqid, psid, callback, fail) => {
     )
 }
 
-exports.GetDataByDate=(conn,queryBody,callback,fail)=>{
-    
-    var promise=conn.RecordsByUsers.findOne({
-        psid:encryptCenter.Decrypt_AES192(queryBody.psid),
-        equipmentId:queryBody.eqid.replace(/"/g,''),
-        _id:queryBody.dtid.replace(/"/g,'')
-    },{
-        _id:0,
-        recordsByPeriod:1
-    })
+exports.GetDataByDate = (conn, queryBody, callback, fail) => {
+
+    var promise = conn.RecordsByUsers.findOne({
+        psid: encryptCenter.Decrypt_AES192(queryBody.psid),
+        equipmentId: queryBody.eqid.replace(/"/g, ''),
+        _id: queryBody.dtid.replace(/"/g, '')
+    }, {
+            _id: 0,
+            recordsByPeriod: 1
+        })
 
 
 
     promise.then(
-       (data)=>{
-           if(data.recordsByPeriod.length>0){
-               callback(data.recordsByPeriod)
-           }else{
-               callback([])
-           }
-       },
-       (err)=>{
-           fail(err)
-       }
-    )
-}
-
-exports.GetTrend=(conn,queryBody,callback,fail)=>{
-    var promise=conn.RecordsByUsers.find({
-        psid:encryptCenter.Decrypt_AES192(queryBody.psid),
-        equipmentId:queryBody.eqid.replace(/"/g,''),
-        recordsByPeriod:{
-            $gt:[]
-        }   
-    },{
-        recordsByPeriod:1,_id:0
-    }).sort({dateTime:-1}).limit(10).lean()
-
-    promise.then(
-        (data)=>{
-            if(data.length>0){
-                var weights=[]
-                var efficiencies=[]
-                data.forEach((ele)=>{
-                    var weight=Math.max.apply(
-                        Math,ele.recordsByPeriod.map(
-                            (o)=>{
-                                return o.weight
-                            }
-                        )
-                    )
-                    weights.push({time:ele.recordsByPeriod[0].period.toISOString().split('T')[0],weight:weight})
-                    var efficiency=Math.max.apply(
-                        Math,ele.recordsByPeriod.map(
-                            (o)=>{
-                                return (o.weight*o.times)
-                            }
-                        )
-                    )
-                    efficiencies.push({time:ele.recordsByPeriod[0].period.toISOString().split('T')[0],efficiency:efficiency})
-                })
-                
-                callback({weights:weights,efficiencies:efficiencies})
-            }else{
-                fail([])
+        (data) => {
+            if (data.recordsByPeriod.length > 0) {
+                callback(data.recordsByPeriod)
+            } else {
+                callback([])
             }
         },
-        (err)=>{
+        (err) => {
             fail(err)
         }
     )
 }
 
-exports.GetTimesOfEquipmets=(conn,psid,callback,fail)=>{
-    var promise=conn.RecordsByUsers.aggregate(
+exports.GetTrend = (conn, queryBody, callback, fail) => {
+    var promise = conn.RecordsByUsers.find({
+        psid: encryptCenter.Decrypt_AES192(queryBody.psid),
+        equipmentId: queryBody.eqid.replace(/"/g, ''),
+        recordsByPeriod: {
+            $gt: []
+        }
+    }, {
+            recordsByPeriod: 1, _id: 0
+        }).sort({ dateTime: -1 }).limit(10).lean()
+
+    promise.then(
+        (data) => {
+            if (data.length > 0) {
+                var weights = []
+                var efficiencies = []
+                data.forEach((ele) => {
+                    var weight = Math.max.apply(
+                        Math, ele.recordsByPeriod.map(
+                            (o) => {
+                                return o.weight
+                            }
+                        )
+                    )
+                    weights.push({ time: ele.recordsByPeriod[0].period.toISOString().split('T')[0], weight: weight })
+                    var efficiency = Math.max.apply(
+                        Math, ele.recordsByPeriod.map(
+                            (o) => {
+                                return (o.weight * o.times)
+                            }
+                        )
+                    )
+                    efficiencies.push({ time: ele.recordsByPeriod[0].period.toISOString().split('T')[0], efficiency: efficiency })
+                })
+
+                callback({ weights: weights, efficiencies: efficiencies })
+            } else {
+                fail([])
+            }
+        },
+        (err) => {
+            fail(err)
+        }
+    )
+}
+
+exports.GetTimesOfEquipmets = (conn, psid, callback, fail) => {
+    var promise = conn.RecordsByUsers.aggregate(
         [
             {
-                $match:{
-                    psid:psid,
-                    recordsByPeriod:{$gt:[]}
+                $match: {
+                    psid: psid,
+                    recordsByPeriod: { $gt: [] }
                 }
             },
             {
-                $group:{
-                    _id:{
-                        _id:'$equipmentId',
-                        equipmentName:'$equipmentName'
+                $group: {
+                    _id: {
+                        _id: '$equipmentId',
+                        equipmentName: '$equipmentName'
                     },
-                    totalTimes:{
-                        $sum:{
-                            $sum:'$recordsByPeriod.times'
+                    totalTimes: {
+                        $sum: {
+                            $sum: '$recordsByPeriod.times'
                         }
                     }
                 }
             },
             {
-                $project:{
-                    _id:1,
-                    value:'$totalTimes'
+                $project: {
+                    _id: 1,
+                    value: '$totalTimes'
                 }
             }
         ]
     )
 
     promise.then(
+        (data) => {
+            if (data.length > 0) {
+                callback(data)
+            } else {
+                callback([])
+            }
+        },
+        (err) => {
+            fail(err)
+        }
+    )
+}
+
+exports.GetComprehenData = (conn,psid, callback, fail) => {
+    psid=encryptCenter.Decrypt_AES192(psid)
+    GetRecordsByPsid(conn,psid).then(
         (data)=>{
             if(data.length>0){
-                callback(data)
+                var records=data
+                var eqids=records.map(d=>d._id._id)
+                for(i=0;i<records.length;i++){
+                    eqids[i]=new objectId(eqids[i])
+                }
+                GetEquipmentsByEqid(conn,eqids).then(
+                    (equipments)=>{
+                        callback({Records:records,Equipments:equipments})
+                    },
+                    (err)=>{
+                        fail(err)
+                    }
+                )
             }else{
                 callback([])
             }
@@ -578,4 +606,86 @@ exports.GetTimesOfEquipmets=(conn,psid,callback,fail)=>{
             fail(err)
         }
     )
+}
+
+var GetRecordsByPsid = (conn, psid) => {
+    var promise = conn.RecordsByUsers.aggregate(
+        [
+            {
+                $match: {
+                    psid: psid,
+                    recordsByPeriod: { $gt: [] }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        _id: '$equipmentId',
+                        equipmentName: '$equipmentName'
+                    },
+                    totalTimes: {
+                        $sum: {
+                            $sum: '$recordsByPeriod.times'
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    equipmentName: '$equipmentName',
+                    value: '$totalTimes'
+                }
+            }
+        ]
+    )
+    return promise
+}
+
+var GetEquipmentsByEqid=(conn,eqids)=>{
+    var promise=conn.Equipments.aggregate(
+        [
+            {
+                $match: {
+                    'equipments._id':{
+                        $in:eqids
+                    }
+                }
+            },{
+                $group:{
+                    _id:'$belongTo',
+                    equipments:{
+                        $push:'$equipments._id'
+                    }
+                }
+            },{
+                $project:{
+                    _id:1,
+                    equipments:{
+                        $reduce:{
+                            input:'$equipments',
+                            initialValue:[],
+                            in:{
+                                $concatArrays:[
+                                    '$$value','$$this'
+                                ]
+                            }
+                        }                                                    
+                    }
+                }
+            },{
+                $project:{
+                    _id:1,
+                    equipments:{
+                        $filter:{
+                            input:'$equipments',
+                            as:'equipments',
+                            cond:{$in:['$$equipments',eqids]}
+                        }
+                    }
+                }
+            }
+        ]
+    )
+    return promise
 }

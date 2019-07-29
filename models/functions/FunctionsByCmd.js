@@ -64,3 +64,21 @@ exports.Data = (request, sender_psid, conn, callback, fail) => {
             break
     }
 }
+
+exports.ComprehensiveData = (request, sender_psid, conn, callback, fail) => {
+    var response = null
+    var url = `https://fbwebhook-240909.appspot.com/ComprehensiveData?pid=${encCenter.Encrypt_AES192(sender_psid)}`
+    switch (request.type) {
+        case 'workout':
+            url += '&type=workout'
+            var elements=[]
+            var button = buttons.Get.web_url('查看', `${url}`, 'full')
+            var _ele = templates.Generic.element('綜合紀錄', 'https://c.pxhere.com/images/44/09/96432f86adf24bdf732ac5dad02a-1584997.jpg!d', '', null, [button])
+            //var _template = templates.Generic.template(_ele)
+            elements.push(_ele[0])
+            response = templates.Carousel.template(elements)
+            //console.log(response)
+            callback(response)
+            break
+    }
+}

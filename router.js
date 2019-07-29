@@ -241,23 +241,6 @@ router.delete('/record', (req, res) => {
     }
 })
 
-router.get('/test', (req, res) => {
-    try {
-        recordBl.GetUserProfile(req.query['pid'],
-            (profile) => {
-                var _profile = JSON.parse(profile)
-                _profile.id = encCenter.Encrypt_AES192(_profile.id)
-                res.render('chart.html', { User: _profile })
-            },
-            (err) => {
-                res.status(200).send(err)
-            })
-    }
-    catch (e) {
-        res.status(200).send(e)
-    }
-})
-
 router.post('/DataByDate', (req, res) => {
     try {
         var queryBody = req.body
@@ -281,7 +264,7 @@ router.post('/Trend', (req, res) => {
         var queryBody = req.body
         recordBl.GetTrend(connection, queryBody,
             (data) => {
-                res.status(200).send({code:1,data:data})
+                res.status(200).send({ code: 1, data: data })
             },
             (err) => {
                 res.status(200).send({ code: -1, data: err })
@@ -289,6 +272,51 @@ router.post('/Trend', (req, res) => {
         )
     } catch (e) {
         res.status(200).send({ code: -1, data: e })
+    }
+})
+
+router.get('/ComprehensiveData', (req, res) => {
+    try {
+        recordBl.GetComprehenData(connection, req.query['pid'],
+            (data) => {
+                console.log(data)
+            },
+            (err) => {
+
+            }
+        )
+    } catch (e) {
+        res.status(500).send('伺服器忙碌中,請稍後再試')
+    }
+})
+
+router.get('/test', (req, res) => {
+    try {
+        recordBl.GetUserProfile(req.query['pid'],
+            (profile) => {
+                var _profile = JSON.parse(profile)
+                var originalPsid = _profile.id
+                _profile.id = encCenter.Encrypt_AES192(_profile.id)
+                switch (req.query['type']) {
+                    case 'workout':
+                        recordBl.GetComprehenData(connection,originalPsid,
+                            (data) => {
+                                var _profile = JSON.parse(profile)
+                                res.render('comprehensiveData.html', { User: _profile,Data:data })
+                            },
+                            (err) => {
+                                res.status(200).send(err)
+                            })
+                        break
+                }
+            },
+            (err) => {
+                res.status(200).send(err)
+            }
+        )
+    }
+    catch (e) {
+        res.status(200).send(e)
     }
 })
 
