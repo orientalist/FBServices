@@ -546,7 +546,10 @@ exports.GetTimesOfEquipmets=(conn,psid,callback,fail)=>{
             },
             {
                 $group:{
-                    _id:'$equipmentId',
+                    _id:{
+                        _id:'$equipmentId',
+                        equipmentName:'$equipmentName'
+                    },
                     totalTimes:{
                         $sum:{
                             $sum:'$recordsByPeriod.times'

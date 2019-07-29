@@ -11,6 +11,12 @@
 <div>
     <button id='btnChanfeData'>變換數據</button>
 </div>
+<div>
+    <canvas id='pieChart'></canvas>
+</div>
+<div>
+    <button id='btnPiechart'>PieChart</button>
+</div>
 {{ /block }}
 {{ block 'script' }}
 <script src="/public/vendor/chart.js/Chart.min.js"></script>
@@ -26,6 +32,27 @@
             ]
             fnInitializeChart('測試',arrs)
         });
+        $('#btnPiechart').click(function(e){
+            e.preventDefault()
+            fnInitializePieChart(['一','二','三'],[4590,3541,1478])
+        })
+        var fnInitializePieChart=(labels,data)=>{
+            var ctxP=document.getElementById('pieChart').getContext('2d')
+            var pieChart=new Chart(ctxP,{
+                type:'pie',
+                data:{
+                    labels:labels,
+                    datasets:[{
+                        data:data,
+                        backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+                        hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+                    }]
+                },
+                options:{
+                    responsive:true
+                }
+            })
+        }
         var fnInitializeChart = (_label, periodAndValue) => {
             var ctx = document.getElementById("myAreaChart");
             var periods=[]

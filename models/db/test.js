@@ -47,10 +47,10 @@ var GetCommand = (finish) => {
                     )
                     promise.then(
                         (data) => {
-                            console.log(data)
+                            //console.log(data)
                             if (data.length > 0) {
                                 var records=data
-                                var eqids = records.map(d => d._id)
+                                var eqids = records.map(d => d._id._id)
                                 for(i=0;i<eqids.length;i++){
                                     eqids[i]=new objectId(eqids[i])
                                 }                                
@@ -62,7 +62,7 @@ var GetCommand = (finish) => {
                                                 'equipments._id':{
                                                     $in:eqids
                                                 }
-                                            }                                            
+                                            }
                                         },{
                                             $group:{
                                                 _id:'$belongTo',
@@ -77,7 +77,22 @@ var GetCommand = (finish) => {
                                                     $reduce:{
                                                         input:'$equipments',
                                                         initialValue:[],
-                                                        in:{$concatArrays:['$$value','$$this']}
+                                                        in:{
+                                                            $concatArrays:[
+                                                                '$$value','$$this'
+                                                            ]
+                                                        }
+                                                    }                                                    
+                                                }
+                                            }
+                                        },{
+                                            $project:{
+                                                _id:1,
+                                                equipments:{
+                                                    $filter:{
+                                                        input:'$equipments',
+                                                        as:'equipments',
+                                                        cond:{$in:['$$equipments',eqids]}
                                                     }
                                                 }
                                             }
@@ -86,16 +101,9 @@ var GetCommand = (finish) => {
                                 )
                                 promise.then(
                                     (data) => {
-                                        if(data.length>0){
-                                            data.forEach((partition)=>{
-                                                partition.totalTimes=0
-                                            })
-                                            
-                                            records.forEach((elements)=>{
-                                                
-                                            })
-                                        }
-                                        finish(data)
+                                        if(data.length>0){                                            
+                                            finish(data)
+                                        }                                        
                                     },
                                     (err) => {
                                         finish(err)
