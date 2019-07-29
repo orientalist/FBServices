@@ -73,39 +73,39 @@ router.get('/record', (req, res) => {
     }
 })
 
-router.get('/data',(req,res)=>{
-    try{
+router.get('/data', (req, res) => {
+    try {
         recordBl.GetUserProfile(req.query['pid'],
-            (profile)=>{
-                var _profile=JSON.parse(profile)
-                var originalPsid=_profile.id
-                _profile.id=encCenter.Encrypt_AES192(_profile.id)
-                switch(req.query['type']){
+            (profile) => {
+                var _profile = JSON.parse(profile)
+                var originalPsid = _profile.id
+                _profile.id = encCenter.Encrypt_AES192(_profile.id)
+                switch (req.query['type']) {
                     case 'workout':
-                        recordBl.GetEquipmentById(connection,req.query['subPartition'],
-                            (equipment)=>{
-                                recordBl.GetDatetimeOfEquipment(connection,req.query['subPartition'],originalPsid,
-                                    (times)=>{                                  
-                                        res.render('RecordByEquipment.html',{User:_profile,Equipment:equipment,RecordTimes:times})
+                        recordBl.GetEquipmentById(connection, req.query['subPartition'],
+                            (equipment) => {
+                                recordBl.GetDatetimeOfEquipment(connection, req.query['subPartition'], originalPsid,
+                                    (times) => {
+                                        res.render('RecordByEquipment.html', { User: _profile, Equipment: equipment, RecordTimes: times })
                                     },
-                                    (err)=>{
+                                    (err) => {
                                         res.status(200).send(err)
                                     }
                                 )
                             },
-                            (err)=>{
+                            (err) => {
                                 res.status(200).send(err)
                             }
                         )
-                    break
+                        break
                 }
             },
-            (err)=>{
+            (err) => {
                 res.status(200).send(err)
             }
         )
     }
-    catch(e){
+    catch (e) {
         res.status(200).send(e)
     }
 })
@@ -160,22 +160,22 @@ router.get('/GetRecordOfEquipment', (req, res) => {
     }
 })
 
-router.get('/GetPreviousRecordOfEquipment',(req,res)=>{
-    try{
-        recordBl.GetPreviousRecordOfEquipment(connection,req.query['eqid'],req.query['psid'],
-            (records)=>{
-                for(be=0;be<records.length;be++){
-                    records[be].period_order=(be+1)
+router.get('/GetPreviousRecordOfEquipment', (req, res) => {
+    try {
+        recordBl.GetPreviousRecordOfEquipment(connection, req.query['eqid'], req.query['psid'],
+            (records) => {
+                for (be = 0; be < records.length; be++) {
+                    records[be].period_order = (be + 1)
                 }
-                
-                res.status(200).send({data:records})
+
+                res.status(200).send({ data: records })
             },
-            (err)=>{
-                res.status(200).send({data:[]})
+            (err) => {
+                res.status(200).send({ data: [] })
             }
         )
-    }catch(e){
-        res.status(200).send({data:[]})
+    } catch (e) {
+        res.status(200).send({ data: [] })
     }
 })
 
@@ -212,11 +212,11 @@ router.delete('/bestRecord', (req, res) => {
     try {
         var data = req.body
         recordBl.DeleteBestRecord(connection, data.psid, data.equipmentId,
-            (success)=>{
-                res.status(200).send({code:1})
+            (success) => {
+                res.status(200).send({ code: 1 })
             },
-            (err)=>{
-                res.status(200).send({code:-1})
+            (err) => {
+                res.status(200).send({ code: -1 })
             }
         )
         res.status(200)
@@ -225,19 +225,19 @@ router.delete('/bestRecord', (req, res) => {
     }
 })
 
-router.delete('/record',(req,res)=>{
-    try{
-        var data=req.body
+router.delete('/record', (req, res) => {
+    try {
+        var data = req.body
         recordBl.DeleteRecord(connection, data.psid, data.id, data.equipmentId,
             (success) => {
-                res.status(200).send({code:1})
+                res.status(200).send({ code: 1 })
             },
             (err) => {
-                res.status(200).send({code:-1})
+                res.status(200).send({ code: -1 })
             }
         )
-    }catch(e){
-        res.status(200).send({code:-1})
+    } catch (e) {
+        res.status(200).send({ code: -1 })
     }
 })
 
@@ -258,21 +258,37 @@ router.get('/test', (req, res) => {
     }
 })
 
-router.post('/DataByDate',(req,res)=>{
-    try{        
-        var queryBody=req.body
-        
-        recordBl.GetDataByDate(connection,queryBody,
-            (data)=>{
-                res.status(200).send({code:1,data:data})
+router.post('/DataByDate', (req, res) => {
+    try {
+        var queryBody = req.body
+
+        recordBl.GetDataByDate(connection, queryBody,
+            (data) => {
+                res.status(200).send({ code: 1, data: data })
             },
-            (err)=>{
-                res.status(200).send({code:-1,data:err})
+            (err) => {
+                res.status(200).send({ code: -1, data: err })
             }
         )
-                
-    }catch(e){
-        res.status(200).send({code:-1,data:e})
+
+    } catch (e) {
+        res.status(200).send({ code: -1, data: e })
+    }
+})
+
+router.post('/Trend', (req, res) => {
+    try {
+        var queryBody = req.body
+        recordBl.GetTrend(connection, queryBody,
+            (data) => {
+                res.status(200).send({code:1,data:data})
+            },
+            (err) => {
+                res.status(200).send({ code: -1, data: err })
+            }
+        )
+    } catch (e) {
+        res.status(200).send({ code: -1, data: e })
     }
 })
 

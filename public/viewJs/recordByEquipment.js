@@ -12,10 +12,10 @@ $(document).ready(() => {
             fnQueryData(psid, equipmentId, queryDate)
         }
     })
-
+    fnQueryTrend(psid,equipmentId)
 })
 var fnQueryData = (psid, equipmentId, queryDate) => {
-    $('canvas').remove();
+    $('canvas').not('.persist').remove();
     $('#divWeight').append($('<canvas>',{
         class:'chartByWeight'        
     }));
@@ -50,6 +50,40 @@ var fnQueryData = (psid, equipmentId, queryDate) => {
             fnInitializeChart('重量',dataByWeight,'Weight')
             fnInitializeChart('次數',dataByTimes,'Times')
             fnInitializeChart('績效',dataByEffifiency,'Efficiency')
+        }
+    })
+}
+var fnQueryTrend=(psid,eqid)=>{
+    var data={
+        psid:psid,
+        eqid:eqid
+    }
+
+    $.ajax({
+        url:'/Trend',
+        type:'POST',
+        contentType:'application/json',
+        data:JSON.stringify(data)
+    }).done((result)=>{
+        if(result.code===1&&
+            result.data.efficiencies.length>0&&
+            result.data.weights.length>0){
+           
+            var dataByWeights=[]
+            var dataByEfficiency=[]
+            for(i=(result.data.weights.length-1);i>=0;i--){
+                var time=new Date(result.data.weights[i].time)
+                time=`${time.getMonth()+1}/${time.getDate()}`
+                dataByWeights.push({period:time,value:result.data.weights[i].weight})
+            }
+            for(i=(result.data.efficiencies.length-1);i>=0;i--){
+                var time=new Date(result.data.efficiencies[i].time)
+                time=`${time.getMonth()+1}/${time.getDate()}`
+                dataByEfficiency.push({period:time,value:result.data.efficiencies[i].efficiency})
+            }
+            
+            fnInitializeChart('重量',dataByWeights,'WeightTrend')
+            fnInitializeChart('績效',dataByEfficiency,'EfficiencyTrend')
         }
     })
 }

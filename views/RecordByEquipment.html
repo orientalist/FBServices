@@ -67,6 +67,27 @@
         </div>
     </div>
 
+    <div class="card shoadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">重量趨勢(近10次 最大重量)</h6>
+        </div>
+        <div class="collapse show" id='collapseDataByEfficient'>
+            <div class="card-body" id='divWeightTrend'>
+                <canvas class="chartByWeightTrend persist"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shoadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">績效趨勢(近10次 最大績效)</h6>
+            </div>
+            <div class="collapse show" id='collapseDataByEfficient'>
+                <div class="card-body" id='divEfficiencyTrend'>
+                    <canvas class="chartByEfficiencyTrend persist"></canvas>
+                </div>
+            </div>
+        </div>
 </div>
 <!-- /.container-fluid -->
 {{ /block }}

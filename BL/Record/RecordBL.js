@@ -488,3 +488,49 @@ exports.GetDataByDate=(conn,queryBody,callback,fail)=>{
        }
     )
 }
+
+exports.GetTrend=(conn,queryBody,callback,fail)=>{
+    var promise=conn.RecordsByUsers.find({
+        psid:encryptCenter.Decrypt_AES192(queryBody.psid),
+        equipmentId:queryBody.eqid.replace(/"/g,''),
+        recordsByPeriod:{
+            $gt:[]
+        }   
+    },{
+        recordsByPeriod:1,_id:0
+    }).sort({dateTime:-1}).limit(10).lean()
+
+    promise.then(
+        (data)=>{
+            if(data.length>0){
+                var weights=[]
+                var efficiencies=[]
+                data.forEach((ele)=>{
+                    var weight=Math.max.apply(
+                        Math,ele.recordsByPeriod.map(
+                            (o)=>{
+                                return o.weight
+                            }
+                        )
+                    )
+                    weights.push({time:ele.recordsByPeriod[0].period.toISOString().split('T')[0],weight:weight})
+                    var efficiency=Math.max.apply(
+                        Math,ele.recordsByPeriod.map(
+                            (o)=>{
+                                return (o.weight*o.times)
+                            }
+                        )
+                    )
+                    efficiencies.push({time:ele.recordsByPeriod[0].period.toISOString().split('T')[0],efficiency:efficiency})
+                })
+                
+                callback({weights:weights,efficiencies:efficiencies})
+            }else{
+                fail([])
+            }
+        },
+        (err)=>{
+            fail(err)
+        }
+    )
+}

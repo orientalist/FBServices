@@ -14,21 +14,66 @@ var GetCommand = (finish) => {
     readLineInterface.question('Please insert your command\n', (cmd) => {
         try {
             switch (cmd) {
-                case 'dd':
-                    var promise=connection.RecordsByUsers.findOne({
-                        psid:'2208236499223584',
-                        equipmentId:'5d26e38aea8db21f505e2994',
-                        _id:'5d26ed4aab5a6899a68678fe'
-                    },{
-                        _id:0,
-                        recordsByPeriod:1
-                    })
+                case 'trend':
+                    var promise = connection.RecordsByUsers.find({
+                        psid: '2208236499223584',
+                        equipmentId: '5d1c44214eebee00000a0586',
+                        recordsByPeriod: {
+                            $gt: []
+                        }
+                    }, {
+                            recordsByPeriod: 1, _id: 0
+                        }).sort({ dateTime: -1 }).limit(10).lean()
 
                     promise.then(
-                        (data)=>{
+                        (rec) => {
+                            if (rec.length > 0) {
+                                var weight = []
+                                var effifiency = []
+                                rec.forEach((ele) => {
+                                    weight.push(
+                                        Math.max.apply(
+                                            Math, ele.recordsByPeriod.map(
+                                                (o) => {
+                                                    return o.weight
+                                                }
+                                            )
+                                        )
+                                    )
+                                    effifiency.push(
+                                        Math.max.apply(Math, ele.recordsByPeriod.map(
+                                            (o) => {
+                                                return (o.weight * o.times)
+                                            }
+                                        ))
+                                    )
+                                })
+                                finish(effifiency)
+                            }
+                            else {
+                                finish([])
+                            }
+                        },
+                        (err) => {
+                            finish(err)
+                        }
+                    )
+                    break
+                case 'dd':
+                    var promise = connection.RecordsByUsers.findOne({
+                        psid: '2208236499223584',
+                        equipmentId: '5d26e38aea8db21f505e2994',
+                        _id: '5d26ed4aab5a6899a68678fe'
+                    }, {
+                            _id: 0,
+                            recordsByPeriod: 1
+                        })
+
+                    promise.then(
+                        (data) => {
                             finish(data.recordsByPeriod)
                         },
-                        (err)=>{
+                        (err) => {
                             finish(err)
                         }
                     )
@@ -36,18 +81,18 @@ var GetCommand = (finish) => {
                 case 'eq':
                     var promise = connection.Equipments.find(
                         {
-                            'equipments._id':'5d1c44214eebee00000a0586'
+                            'equipments._id': '5d1c44214eebee00000a0586'
                         },
                         {
-                            _id:0,
-                            'equipments.$':1
+                            _id: 0,
+                            'equipments.$': 1
                         }
                     )
                     promise.then(
-                        (equipment)=>{
+                        (equipment) => {
                             finish(equipment[0].equipments[0])
                         },
-                        (err)=>{
+                        (err) => {
                             finish(err)
                         }
                     )
@@ -78,22 +123,22 @@ var GetCommand = (finish) => {
                             //console.log(data)
                             if (data.length > 0) {
 
-                               
 
-                                for(i=0;i<data.length;i++){
-                                    data[i]=new objectId(data[i])
+
+                                for (i = 0; i < data.length; i++) {
+                                    data[i] = new objectId(data[i])
                                 }
                                 var _promise = connection.Equipments.aggregate([
                                     {
                                         $project: {
-                                            equipments:{
-                                                $filter:{
-                                                    input:'$equipments',
-                                                    as:'equipments',
-                                                    cond:{$in:['$$equipments._id',data]}
+                                            equipments: {
+                                                $filter: {
+                                                    input: '$equipments',
+                                                    as: 'equipments',
+                                                    cond: { $in: ['$$equipments._id', data] }
                                                 }
                                             },
-                                            _id: 0,                                            
+                                            _id: 0,
                                         }
                                     }
                                 ])
@@ -137,8 +182,8 @@ var GetCommand = (finish) => {
 
                         _promise.then(
                             (data) => {
-                                data.forEach((i)=>{
-                                    i.dateTime=i.dateTime.toISOString().split('T')[0]
+                                data.forEach((i) => {
+                                    i.dateTime = i.dateTime.toISOString().split('T')[0]
                                 })
                                 finish(data)
                             },
