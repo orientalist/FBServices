@@ -1,89 +1,39 @@
 {{ extend './_layouts/home.html' }}
 {{ block 'title' }}{{ '運動數據' }}{{ /block }}
 {{ block 'head' }}
-
-
+<style>
+    .divBorder {
+        margin-top: 10px;
+    }
+</style>
 {{ /block }}
 {{ block 'body' }}
 <!-- Begin Page Content -->
 <input type="hidden" name="psid" value="{{ User.id }}">
-<div class="container-fluid">
-    <!-- DataTales Example -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">運動紀錄: </h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive" style="text-align: center;">
-                <div class="dropdown mb-4">
-                    <img src="" style="height: 20vh;">
-                </div>
-                <div class="dropdown mb-4">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownQueryDate"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span id='queryDate'>請選擇日期</span>
-                    </button>
-                    <div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownQueryDate">
-                   
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card shoadow mb-4">
+<div class="container-fluid" id='divContainer'>
+    <div class="card shoadow mb-6 divBorder">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary"><span class="recordDate"></span> 重量 數據</h6>
+            <h6 class="m-0 font-weight-bold text-primary">主要肌群 訓練次數分佈</h6>
         </div>
-        <div class="collapse show" id='collapseDataByWeight'>
-            <div class="card-body" id='divWeight'>
-
+        <div class="collapse show">
+            <div class="card-body">
+                <canvas id='pieComprehensive' style="width:80vw;height:70vh;"></canvas>
             </div>
         </div>
     </div>
+    
+</div>
 
-    <div class="card shoadow mb-4">
+<div style="display:none" id='divHidden'>
+    <div class="card shoadow mb-6 divBorder">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary"><span class="recordDate"></span> 次數 數據</h6>
+            <h6 class="m-0 font-weight-bold text-primary"><span class="spPartition"></span> 訓練次數分佈</h6>
         </div>
-        <div class="collapse show" id='collapseDataByTimes'>
-            <div class="card-body" id='divTimes'>
-
+        <div class="collapse show">
+            <div class="card-body">                
             </div>
         </div>
     </div>
-
-    <div class="card shoadow mb-4">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary"><span class="recordDate"></span> 績效 數據</h6>
-        </div>
-        <div class="collapse show" id='collapseDataByEfficient'>
-            <div class="card-body" id='divEfficiency'>
-
-            </div>
-        </div>
-    </div>
-
-    <div class="card shoadow mb-4">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">重量趨勢(近10次 最大重量)</h6>
-        </div>
-        <div class="collapse show" id='collapseDataByEfficient'>
-            <div class="card-body" id='divWeightTrend'>
-                <canvas class="chartByWeightTrend persist"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div class="card shoadow mb-4">
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">績效趨勢(近10次 最大績效)</h6>
-            </div>
-            <div class="collapse show" id='collapseDataByEfficient'>
-                <div class="card-body" id='divEfficiencyTrend'>
-                    <canvas class="chartByEfficiencyTrend persist"></canvas>
-                </div>
-            </div>
-        </div>
 </div>
 <!-- /.container-fluid -->
 {{ /block }}

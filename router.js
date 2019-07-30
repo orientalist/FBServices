@@ -276,18 +276,39 @@ router.post('/Trend', (req, res) => {
 })
 
 router.get('/ComprehensiveData', (req, res) => {
-    try {
-        recordBl.GetComprehenData(connection, req.query['pid'],
-            (data) => {
-                console.log(data)
+    try {        
+        recordBl.GetUserProfile(req.query['pid'],
+            (profile) => {
+                var _profile = JSON.parse(profile)
+                _profile.id = encCenter.Encrypt_AES192(_profile.id)
+                res.render('comprehensiveData.html',{User:_profile})                                
             },
             (err) => {
-
+                res.status(500).send('伺服器忙碌中,請稍後再試')
             }
         )
     } catch (e) {
         res.status(500).send('伺服器忙碌中,請稍後再試')
     }
+})
+
+router.post('/ComprehensiveData',(req,res)=>{
+    try{
+        switch (req.query['type']) {
+            case 'workout':
+                recordBl.GetComprehenData(connection,encCenter.Decrypt_AES192(req.query['pid']),
+                    (data) => {                                
+                        res.status(200).send({code:1,data:data})
+                    },
+                    (err) => {
+                        res.status(200).send({code:-1,data:err})
+                    }
+                )
+                break
+        }
+    }catch(e){
+        res.status(200).send({code:-1,data:e})
+    }    
 })
 
 router.get('/test', (req, res) => {
@@ -299,10 +320,10 @@ router.get('/test', (req, res) => {
                 _profile.id = encCenter.Encrypt_AES192(_profile.id)
                 switch (req.query['type']) {
                     case 'workout':
-                        recordBl.GetComprehenData(connection,originalPsid,
+                        recordBl.GetComprehenData(connection, originalPsid,
                             (data) => {
                                 var _profile = JSON.parse(profile)
-                                res.render('comprehensiveData.html', { User: _profile,Data:data })
+                                res.render('comprehensiveData.html', { User: _profile, Data: data })
                             },
                             (err) => {
                                 res.status(200).send(err)

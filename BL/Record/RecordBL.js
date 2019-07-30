@@ -3,13 +3,13 @@ var encryptCenter = require('../../models/Encryption/EncryptionCenter')
 var equipmentBL = require('../../models/db/functions/equipmentBL')
 var objectId = require('mongoose').Types.ObjectId
 
-exports.GetUserProfile = (pid, postback, fail) => {
+exports.GetUserProfile = (pid, postback, fail) => {    
     var promise = offifialApi.GetUserProfile_Promise(encryptCenter.Decrypt_AES192(pid))
     promise.then(
-        (_profile) => {
+        (_profile) => {            
             postback(_profile)
         },
-        (err) => {
+        (err) => {            
             fail(err)
         }
     )
@@ -580,8 +580,7 @@ exports.GetTimesOfEquipmets = (conn, psid, callback, fail) => {
     )
 }
 
-exports.GetComprehenData = (conn,psid, callback, fail) => {
-    psid=encryptCenter.Decrypt_AES192(psid)
+exports.GetComprehenData = (conn,psid, callback, fail) => {    
     GetRecordsByPsid(conn,psid).then(
         (data)=>{
             if(data.length>0){
