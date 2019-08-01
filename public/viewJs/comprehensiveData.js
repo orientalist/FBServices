@@ -9,9 +9,9 @@ var fnGetComprehensiveData = (psid) => {
         if (result.code === 1) {
             var Equipments = result.data.Equipments
             var Records = result.data.Records
-            var TotalCounts = 0
+
             $.each(Equipments, (index, eqs) => {
-                switch (eqs._id) {
+                switch (eqs._id._id) {
                     case 'arm':
                         eqs.Partition = '手部肌群'
                         break
@@ -32,32 +32,50 @@ var fnGetComprehensiveData = (psid) => {
                     var _eq = Records.find(r => r._id._id === eq)
                     _eqs.SubEquipments.push({ _id: _eq._id._id, name: _eq._id.equipmentName, value: _eq.value })
                     _eqs.TotalCounts += _eq.value
-                    TotalCounts += _eq.value
                 })
             })
-            var colors = fnGenerateColors(Equipments.length)
-
+            var chart_mainpartitions=Array.from(new Set(Equipments.map(e=>e.Partition)))
+            var partitionWithCounts=[]
+            chart_mainpartitions.forEach((m)=>{
+                var totalCount=0
+                Equipments.filter((item,index,arr)=>{
+                    if(item.Partition===m){
+                        totalCount+=item.TotalCounts
+                    }            
+                })
+                partitionWithCounts.push({Mainpartition:m,TotalTimes:totalCount})
+            })
+            var colors = fnGenerateColors(chart_mainpartitions.length)
             fnInitializePieChart(
-                (Equipments.map((o) => { return o.Partition })),
-                (Equipments.map((o) => { return Math.floor((o.TotalCounts / TotalCounts) * 100) })),
+                (partitionWithCounts.map((o)=>{return o.Mainpartition})),
+                (partitionWithCounts.map((o)=>{return o.TotalTimes})),
                 colors,
                 'Comprehensive'
             )
-            $.each(Equipments, (index, value) => {
+            //console.log(Equipments)
+            $.each(partitionWithCounts, (index, value) => {
                 var newDiv = $('#divHidden .divBorder').clone()
                 var newCanvas = $('<canvas>', {
-                    id: `pie${value._id}`,
+                    id: `pie${value.Mainpartition}`,
                     style: 'width:80vw;height:70vh;'
                 })
                 $(newDiv).find('.card-body').append(newCanvas)
-                $(newDiv).find('.spPartition').text(value.Partition)
+                $(newDiv).find('.spPartition').text(value.Mainpartition)
                 $('#divContainer').append(newDiv);
-                var colors = fnGenerateColors(value.SubEquipments.length)
+                var subPartitionsWithCounts=[]
+                Equipments.filter((item,index,arr)=>{
+                    if(item.Partition===value.Mainpartition){
+                        subPartitionsWithCounts.push({SubPartition:item._id._subPartiton,TotalTimes:item.TotalCounts})
+                    }
+                })
+                //console.log(subPartitionsWithCounts)
+
+                var colors = fnGenerateColors(subPartitionsWithCounts.length)
                 fnInitializePieChart(
-                    (value.SubEquipments.map((o) => { return o.name })),
-                    (value.SubEquipments.map((o) => { return o.value })),
+                    (subPartitionsWithCounts.map((o) => { return o.SubPartition })),
+                    (subPartitionsWithCounts.map((o) => { return o.TotalTimes })),
                     colors,
-                    value._id
+                    value.Mainpartition
                 )
             })
         }

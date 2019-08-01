@@ -297,7 +297,7 @@ router.post('/ComprehensiveData',(req,res)=>{
         switch (req.query['type']) {
             case 'workout':
                 recordBl.GetComprehenData(connection,encCenter.Decrypt_AES192(req.query['pid']),
-                    (data) => {                                
+                    (data) => {
                         res.status(200).send({code:1,data:data})
                     },
                     (err) => {

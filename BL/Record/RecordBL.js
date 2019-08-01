@@ -652,7 +652,10 @@ var GetEquipmentsByEqid=(conn,eqids)=>{
                 }
             },{
                 $group:{
-                    _id:'$belongTo',
+                    _id:{
+                        _id:'$belongTo',
+                        _subPartiton:'$groupName'
+                    },
                     equipments:{
                         $push:'$equipments._id'
                     }
